@@ -12,14 +12,18 @@ module.exports = (sequelize) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
+    },  
     description: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     rating: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: DataTypes.INTEGER,
+      defaultValue: 0,      
+    },    
+    esrb_rating: {
+       type: DataTypes.STRING,
+       defaultValue: "Rating Pending"
     },
     background_image: {
       type: DataTypes.STRING,
@@ -29,43 +33,32 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    screenshots: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     trailer: {
       type: DataTypes.STRING,      
     },
     requeriments_recomended: {
-      type: DataTypes.STRING,      
+      type: DataTypes.STRING, 
+      defaultValue: "Has no Requeriments"     
     },
     requeriments_min: {
       type: DataTypes.STRING,      
+      defaultValue: "Has no Requeriments"     
     }, 
     price: {
-      type: DataTypes.STRING,      
+      type: DataTypes.FLOAT,      
     }, 
     isDisabled: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      defaultValue: false,      
     },
     onSale: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      defaultValue: false,      
     },
-    esrb_rating: {
-      type: DataTypes.INTEGER,
-      // allowNull: false,
-    },
-    genre_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    esrb_rating: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },    
-    
+    // createdDb: {
+    //   type: DataTypes.BOOLEAN,
+    //   defaultValue: false,      
+    // },    
   });
 };
 

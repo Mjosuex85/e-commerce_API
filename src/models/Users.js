@@ -1,17 +1,30 @@
 const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
-  sequelize.define('genre', {
-    name: {
+  sequelize.define('users', {
+    id: {
+      type: DataTypes.INTEGER,
+      defaultValue: DataTypes.INTEGER,
+      primaryKey: true,
+    },
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-
-    id: {
-      type: DataTypes.UUIDV1,
-      defaultValue: DataTypes.UUIDV4
-    },
-    imageBackground:{
+    name:{
       type: DataTypes.STRING,
+      allowNull:false,
+    },
+    lastname:{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    email:{
+      type:DataTypes.STRING,
+      allowNull:false,
+    },
+    password:{
+      type:DataTypes.STRING,
+      allowNull:false
     }
   });
 };

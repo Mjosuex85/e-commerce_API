@@ -1,13 +1,26 @@
 const Router = require('Express')
 const axios = require('axios')
 const router = Router()
+const { Products } = require('../db')
 
 
-
+// console.log(Product)
 router.get("/", async (req, res, next)=>{
     try{
         const response =  await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=10&page_size=100`)
         var videogames = response.data.results.map((game)=>{
+            Products.findOrCreate({
+                where:{
+                id: game.id,
+                name: game.name,
+                slug: game.slug,
+                ratings: game.ratings,
+                background_img: game.background_image,
+                relesed: game.released,
+                metacriticRating: game.metacritic,
+                price: Math.round(((Math.random() * 70)*100)/100),
+                esrb_rating: game.esrb_rating,
+            }})
             return {
                 id: game.id,
                 name: game.name,
@@ -20,10 +33,25 @@ router.get("/", async (req, res, next)=>{
                 esrb_rating: game.esrb_rating,
             }
         })
+
+        
+
+
         if (req.query.name) {
             slug = req.query.name.split(' ').join('-').toLowerCase();
             console.log(slug);
             var game = videogames.filter(e => e.slug === slug);
+            // Products.findOrCreate({
+            //     id: game.id,
+            //     name: game.name,
+            //     slug: game.slug,
+            //     ratings: game.ratings,
+            //     background_img: game.background_image,
+            //     relesed: game.released,
+            //     metacriticRating: game.metacritic,
+            //     price: Math.round(((Math.random() * 70)*100)/100),
+            //     esrb_rating: game.esrb_rating,
+            // })
             res.send(game)
         }else{
             res.send(videogames)

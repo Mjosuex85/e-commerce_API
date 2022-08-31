@@ -29,5 +29,13 @@ module.exports = (sequelize) => {
     profile_pic:{
       type: DataTypes.STRING
     },
+    isBanned:{
+      type: DataTypes.BOOLEAN
+    },
+    isAdmin:{
+      type: DataTypes.BOOLEAN
+    }
+  },{
+    updatedAt: false
   });
 };

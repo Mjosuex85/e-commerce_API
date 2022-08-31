@@ -34,6 +34,7 @@ const { Products, Users, Reviews, Platforms, Order, Genre } = sequelize.models;
 
 // Aca vendrian las relaciones
 // Product.hasMany(Reviews);
+
 // console.log(sequelize.models)
 
 Products.belongsToMany(Users, { through: "Favorites"})

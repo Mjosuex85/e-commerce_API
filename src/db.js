@@ -6,7 +6,7 @@ const {
   DB_USER, DB_PASSWORD, DB_HOST,
 } = process.env;
 
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@localhost/videogames`, {
+const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/videogames`, {
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
 });
@@ -14,43 +14,31 @@ const basename = path.basename(__filename);
 
 const modelDefiners = [];
 
-// Leemos todos los archivos de la carpeta Models, los requerimos y agregamos al arreglo modelDefiners
 fs.readdirSync(path.join(__dirname, '/models'))
   .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
   .forEach((file) => {
     modelDefiners.push(require(path.join(__dirname, '/models', file)));
   });
 
-// Injectamos la conexion (sequelize) a todos los modelos
 modelDefiners.forEach(model => model(sequelize));
-// Capitalizamos los nombres de los modelos ie: product => Product
+
 let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-// En sequelize.models están todos los modelos importados como propiedades
-// Para relacionarlos hacemos un destructuring
-const { Products, Users, Reviews, Platforms, Order, Genre } = sequelize.models;
-
-// Aca vendrian las relaciones
-// Product.hasMany(Reviews);
-
-// console.log(sequelize.models)
+const { Products, Users, Reviews, Platforms, Genre } = sequelize.models;
 
 Products.belongsToMany(Users, { through: "Favorites"})
 Users.belongsToMany(Products, { through: "Favorites"})
 
-Products.belongsToMany(Users, { through: "Owned"})
-Users.belongsToMany(Products, { through: "Owned"})
-
-Products.belongsToMany(Order, { through: "OrderProduct"})
-Order.belongsToMany(Products, { through: "OrderProduct"})
+Products.belongsToMany(Users, { through: "Order"})
+Users.belongsToMany(Products, { through: "Order"})
 
 Products.belongsToMany(Platforms, { through: "PlatformGame"})
 Platforms.belongsToMany(Products, { through: "PlatformGame"})
 
-Users.belongsToMany(Reviews, { through: "PlatformGame"})
-Reviews.belongsToMany(Users, { through: "PlatformGame"})
+Products.hasMany(Reviews,{foreignKey: 'reviewID'})
+Reviews.belongsTo(Products,)
 
 Genre.belongsToMany(Products, { through: "ProductGenre"})
 Products.belongsToMany(Genre, { through: "ProductGenre"})
@@ -58,6 +46,6 @@ Products.belongsToMany(Genre, { through: "ProductGenre"})
 
 
 module.exports = {
-  ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
-  conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
+  ...sequelize.models, 
+  conn: sequelize,  
 };

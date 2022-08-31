@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
-  sequelize.define('users', {
+  sequelize.define('Users', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -25,10 +25,12 @@ module.exports = (sequelize) => {
     password:{
       type:DataTypes.STRING,
       allowNull:false
-    }
+    },
+    profile_pic:{
+      type: DataTypes.STRING
+    },
   },
   {
-    updatedAt: false,
-    createdAt: true
+    updatedAt: false
   });
 };

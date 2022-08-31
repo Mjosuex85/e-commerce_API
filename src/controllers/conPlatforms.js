@@ -7,7 +7,7 @@ router.get("/", async (req, res, next)=>{
     try{
         let plat = await Platforms.findAll();
         if (plat.length === 0) {
-            const response = await axios.get(`https://api.rawg.io/api/platforms/lists/parents?key=34071ca514064be9b4e513a0c8ab844a`);
+            const response = await axios.get(`https://api.rawg.io/api/platforms/lists/parents?key=${process.env.API_KEY}`);
             var platformsApi = response.data.results.map( e => {
                 return e.platforms.map(e => {
                     return {

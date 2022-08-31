@@ -6,7 +6,7 @@ const router = Router()
 router.get("/", async (req, res, next)=>{
     console.log("HOLAAAAAAAAAAAAAAAAA")
     try{        
-        const response = await axios.get(`https://api.rawg.io/api/genres?key=ea6bc50decb34451a163c6613b36672d`);
+        const response = await axios.get(`https://api.rawg.io/api/platforms/lists/parents?key=34071ca514064be9b4e513a0c8ab844a`);
              
         res.send(response.data)
     }catch(err){

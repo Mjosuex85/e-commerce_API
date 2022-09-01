@@ -1,4 +1,4 @@
-const Router = require('Express')
+const Router = require('express')
 const axios = require('axios')
 const router = Router()
 const { Products, Platforms, Genre, Reviews } = require('../db')
@@ -21,9 +21,15 @@ router.get("/", async (req, res, next)=>{
             response = response.map(e=>e.data.results)
             response= response[0].concat(response[1],response[2])
 
+            await axios.get(`${process.env.URL}/genres`);
+            await axios.get(`${process.env.URL}/platforms`);
+            
             var videogames = await response.map(async (game)=>{
                 
                 let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
+                let genres = detail.data.genres.map((e) => e.name);
+                let platforms = detail.data.platforms.map((e) => e.platform.name);
+                
                 let description = detail.data.description;
                 
                 let esrb = game.esrb_rating
@@ -40,79 +46,142 @@ router.get("/", async (req, res, next)=>{
                     requirements.minimum = 'No requirements';
                 }
                 
-                let  dbProduct = await Products.findOrCreate({
-                    
-                    where:{
-                        id_api: game.id,
-                        name: game.name,
-                        description: description,
-                        rating: game.ratings[0].percent,
-                        esrb_rating: esrb,
-                        background_image: game.background_image,
-                        released: game.released,
-                        requeriments_recomended: requirements.recommended,
-                        requeriments_min: requirements.minimum,
-                        price: Math.round(((Math.random() * 70)*100)/100),
-                        slug: game.slug,
-                        metacriticRating: game.metacritic,
-                        isDisabled: false,
-                        onSale: false,
-                    }})
-                    
-                    // console.log("videogames::____::");
-                    // console.log(dbProduct[0].dataValues)
-                    return dbProduct[0].dataValues
-                    // {
-                        //     id: game.id,
-                        //     name: game.name,
-                        //     slug: game.slug,
-                        //     rating: game.ratings[0].percent,
-                        //     background_image: game.background_image,
-                        //     relesed: game.released,
-                        //     metacriticRating: game.metacritic,
-                        //     price: Math.round(((Math.random() * 70)*100)/100),
-                        //     esrb_rating: game.esrb_rating,
-                        // }
-                    })
-
-                    // console.log(videogames)
-                    Promise.all(videogames)
-                    .then((arr)=>{   
-                        console.log('lo traje de la api')                     
-                        res.send(arr)
-                    })
-                    
+                let  dbProduct = await Products.create({                                       
+                    id_api: game.id,
+                    name: game.name,
+                    description: description,
+                    rating: game.ratings[0].percent,
+                    esrb_rating: esrb,
+                    background_image: game.background_image,
+                    released: game.released,
+                    requeriments_recomended: requirements.recommended,
+                    requeriments_min: requirements.minimum,
+                    price: Math.round(((Math.random() * 70)*100)/100),
+                    slug: game.slug,
+                    metacriticRating: game.metacritic,
+                    isDisabled: false,
+                    onSale: false,
+                })
+                
+                genres.forEach(async (g) => {
+                    var genreDb = await Genre.findAll({ where: { name:g } });
+                    dbProduct.addGenre(genreDb);
+                });
+                
+                platforms.forEach(async (p) => {
+                    var platformDb = await Platforms.findAll({ where: { name:p } });
+                    dbProduct.addPlatforms(platformDb);
+                });
+                return dbProduct.dataValues
+            })
+            
+            //sin esto guarda igual en db
+            Promise.all(videogames)
+            .then((arr)=>{   
+                console.log('lo traje de la api')           
+                res.send(arr)
+            })   
         }else{
-            console.log("lo traje de la Db")
-            console.log(allProducts.length)
-            res.send(allProducts)
+        
+            let nameQuery = req.query.name;
+            if (nameQuery) {
+                let slug = nameQuery.split(' ').join('-').toLowerCase();
+                const fetchDbName = await Products.findAll({
+                    //busca el nombre en la db
+                    where: {slug: {[Op.like]: '%' + slug + '%'}},
+                    include: [Genre, Platforms],
+                });
+                // console.log(fetchDbName);
+                /*if(fetchDbName.length === 0){
+                    const fetchApiName = await axios.get(`http://localhost:3001/videogames/?name=${nameQuery}`);
+                    res.status(200).send(fetchApiName);
+                }else{*/
+                    res.status(200).send(fetchDbName);
+                //}
+            }else{     
+                console.log("lo traje de la Db")
+                console.log(allProducts.length)
+                //poner nombres en minúsculas Genre
+                var dbAll = await Products.findAll({
+                    include:[{
+                        model: Genre,
+                        attributes: ['name'],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                    {
+                        model: Platforms,
+                        attributes: ['name'],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ]
+                })
+                res.status(200).send(dbAll)
+            }
         }        
     }catch(err){
-        next(err)
+        console.log(err);
+        res.status(401).send(err);
     }
 })
 
 router.get("/:id", async (req, res, next)=>{
     try{ 
         let {id} = req.params
-        const response = await axios.get(`https://api.rawg.io/api/games/${id}?key=${process.env.API_KEY}`)
-        console.log(response)
-        var videogame = {
-                id: response.data.id,
-                name: response.data.name,
-                slug: response.data.slug,
-                description: response.data.description,
-                ratings: response.data.ratings,
-                background_img: response.data.background_image,
-                relesed: response.data.released,
-                metacriticRating: response.data.metacritic,
-                price: Math.round(((Math.random() * 70)*100)/100),
-                esrb_rating: response.data.esrb_rating,
-                platform: response.data.platform,
+        console.log(typeof id)
+        console.log(isNaN(id));
+        if (isNaN(id)) {
+            var details = await Products.findOne({
+                where: { id: id },
+                order: [["name", "ASC"]],
+                include:[{
+                            model: Genre,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                        {
+                            model: Platforms,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                    ],         
+            });   
+        }else{
+            var details = await Products.findOne({
+                where: { id_api: id },
+                order: [["name", "ASC"]],
+                include:[{
+                            model: Genre,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                        {
+                            model: Platforms,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                    ],         
+            });
         }
-        res.send(videogame)
+        if (!details) {
+            res.status(404).send(details);
+        }else{
+            res.status(200).send(details);
+        }
     }catch(err){
-        next(err)
+        console.log(err);
+        res.status(401).send(err);
     }
 })
 

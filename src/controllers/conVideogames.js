@@ -211,8 +211,10 @@ router.post("/create", async (req,res)=>{
         price && 
         isDisabled){
         try{
+            let slug = name.split(' ').join('-').toLowerCase();
             let Create_Videogame = await Products.create({
                 name,
+                slug,
                 description,
                 rating,
                 metacriticRating,

@@ -3,13 +3,43 @@ const { Sequelize } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
 const {
-  DB_USER, DB_PASSWORD, DB_HOST,
+  DB_USER, DB_PASSWORD, DB_HOST, DB_NAME
 } = process.env;
 
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/videogames`, {
+
+let sequelize =
+  process.env.NODE_ENV === "production"
+    ? new Sequelize({
+        database: DB_NAME,
+        dialect: "postgres",
+        host: DB_HOST,
+        port: 5432,
+        username: DB_USER,
+        password: DB_PASSWORD,
+        pool: {
+          max: 3,
+          min: 1,
+          idle: 10000,
+        },
+        dialectOptions: {
+          ssl: {
+            require: true,
+            // Ref.: https://github.com/brianc/node-postgres/issues/2009
+            rejectUnauthorized: false,
+          },
+          keepAlive: true,
+        },
+        ssl: true,
+      })
+    : new Sequelize(
+        `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/videogames`,
+        { logging: false, native: false }
+      );
+      
+/*const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@localhost/videogames`, {
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-});
+});*/
 const basename = path.basename(__filename);
 
 const modelDefiners = [];
@@ -28,20 +58,23 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 const { Products, Users, Reviews, Platforms, Genre } = sequelize.models;
 
-Products.belongsToMany(Users, { through: "Favorites"})
-Users.belongsToMany(Products, { through: "Favorites"})
+Products.belongsToMany(Users, { through: "Favorites", timestamps: false})
+Users.belongsToMany(Products, { through: "Favorites", timestamps: false })
+
 
 Products.belongsToMany(Users, { through: "Order"})
 Users.belongsToMany(Products, { through: "Order"})
 
-Products.belongsToMany(Platforms, { through: "PlatformGame"})
-Platforms.belongsToMany(Products, { through: "PlatformGame"})
+Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
+Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})
+
 
 Products.hasMany(Reviews,{foreignKey: 'reviewID'})
 Reviews.belongsTo(Products,)
 
-Genre.belongsToMany(Products, { through: "ProductGenre"})
-Products.belongsToMany(Genre, { through: "ProductGenre"})
+
+Genre.belongsToMany(Products, { through: "ProductGenre", timestamps:false})
+Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 
 
 

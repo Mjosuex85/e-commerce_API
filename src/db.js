@@ -2,6 +2,9 @@ require('dotenv').config();
 const { Sequelize } = require('sequelize');
 const fs = require('fs');
 const path = require('path');
+const getApiGames = require('./services/getApiGames');
+const getApiPlatforms = require('./services/getApiPlatforms');
+const getApiGenres = require('./services/getApiGenres');
 const {
   DB_USER, DB_PASSWORD, DB_HOST, DB_NAME
 } = process.env;
@@ -61,22 +64,21 @@ const { Products, Users, Reviews, Platforms, Genre } = sequelize.models;
 Products.belongsToMany(Users, { through: "Favorites", timestamps: false})
 Users.belongsToMany(Products, { through: "Favorites", timestamps: false })
 
-
 Products.belongsToMany(Users, { through: "Order"})
 Users.belongsToMany(Products, { through: "Order"})
 
 Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
 Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})
 
-
 Products.hasMany(Reviews,{foreignKey: 'reviewID'})
 Reviews.belongsTo(Products,)
-
 
 Genre.belongsToMany(Products, { through: "ProductGenre", timestamps:false})
 Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 
-
+getApiGames(Products, Platforms, Genre);
+getApiPlatforms(Platforms);
+getApiGenres(Genre);
 
 module.exports = {
   ...sequelize.models, 

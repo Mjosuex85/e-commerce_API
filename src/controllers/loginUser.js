@@ -9,7 +9,7 @@ const router = Router();
 
 passport.use(new LocalStrategy( async function verify(username, password, cb){
     const user = await Users.findOne({where:{email: username}});
-    if(user && user.isBanned){
+    if(user && !user.isBanned){
         const passwordMatch = await bcrypt.compare(password, user.password)
         if(username === user.email && passwordMatch){
             return cb(null, {id:user.id, email:user.email})

@@ -20,9 +20,16 @@ router.get("/", async (req, res, next)=>{
             response = response.map(e=>e.data.results)
             response= response[0].concat(response[1],response[2])
 
-            var videogames = await response.map(async (game)=>{
+            await axios.get("http://localhost:3001/genres");
+            await axios.get("http://localhost:3001/platforms");
+            
+            
+            var videogames = await response.map(async (game, i)=>{
                 
                 let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
+                let genres = detail.data.genres.map((e) => e.name);
+                let platforms = detail.data.platforms.map((e) => e.platform.name);
+
                 let description = detail.data.description;
                 
                 let esrb = game.esrb_rating
@@ -39,9 +46,8 @@ router.get("/", async (req, res, next)=>{
                     requirements.minimum = 'No requirements';
                 }
                 
-                let  dbProduct = await Products.findOrCreate({
-                    
-                    where:{
+                let  dbProduct = await Products.create({
+                                       
                         id_api: game.id,
                         name: game.name,
                         description: description,
@@ -56,28 +62,39 @@ router.get("/", async (req, res, next)=>{
                         metacriticRating: game.metacritic,
                         isDisabled: false,
                         onSale: false,
-                    }})
+                    })
                     
-                    // console.log("videogames::____::");
-                    // console.log(dbProduct[0].dataValues)
-                    return dbProduct[0].dataValues
-                    // {
-                        //     id: game.id,
-                        //     name: game.name,
-                        //     slug: game.slug,
-                        //     rating: game.ratings[0].percent,
-                        //     background_image: game.background_image,
-                        //     relesed: game.released,
-                        //     metacriticRating: game.metacritic,
-                        //     price: Math.round(((Math.random() * 70)*100)/100),
-                        //     esrb_rating: game.esrb_rating,
-                        // }
+                    // let detail = arrDetail.filter((e) => e.id !== game.id);
+                    //         console.log(detail.genres);
+                            /*let foundGenre = genres.forEach(async (g) => {
+                                    let gSearch = await Genre.findOne({
+                                        where: {
+                                        name: g,
+                                        },
+                                    });
+                                    if(i < 1){
+                                        console.log(dbProduct)
+                                        console.log(gSearch)
+                                    }
+                                    let relationship = dbProduct.addGenre(gSearch);
+                            });*/
+                            genres.forEach(async (g) => {
+                                var genreDb = await Genre.findAll({ where: { name:g } });
+                                dbProduct.addGenre(genreDb);
+                            });
+                            let plat = await Platforms.findAll();
+                        
+                            platforms.forEach(async (p) => {
+                                var platformDb = await Platforms.findAll({ where: { name:p } });
+                                dbProduct.addPlatforms(platformDb);
+                            });
+                    return dbProduct.dataValues
                     })
 
-                    // console.log(videogames)
+                    //sin esto guarda igual en db
                     Promise.all(videogames)
                     .then((arr)=>{   
-                        console.log('lo traje de la api')                     
+                        console.log('lo traje de la api')           
                         res.send(arr)
                     })
                     
@@ -90,6 +107,20 @@ router.get("/", async (req, res, next)=>{
         next(err)
     }
 })
+
+/*let totalData = await Videogame.findAll(
+        {
+          include: [{
+            model: Genre,
+            attributes: ["name"],
+            through: {
+              attributes: []
+            }
+          }]
+        }
+      )
+      res.send(totalData);
+    }*/
 
 router.get("/:id", async (req, res, next)=>{
     try{ 

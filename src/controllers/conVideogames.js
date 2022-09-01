@@ -3,6 +3,7 @@ const axios = require('axios')
 const router = Router()
 const { Products, Platforms, Genre, Reviews } = require('../db')
 const {Op} = require('sequelize')
+const Product = require('../models/Product')
 
 
 const link_video = [`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page_size=40`,
@@ -183,5 +184,59 @@ router.get("/:id", async (req, res, next)=>{
         res.status(401).send(err);
     }
 })
+
+
+//let product_required = name && description && genre && rating && metacriticRating && esrb_rating && background_image && released && requeriments_min && requeriments_recomended && price && onSale && isDisabled
+router.post("/create", async (req,res)=>{
+    const {name, // no null
+        genres, //
+        description, //
+        rating, //
+        metacriticRating,
+        esrb_rating, 
+        background_image,
+        released,
+        requeriments_min,
+        requeriments_recomended,
+        price,
+        onSale,
+        isDisabled} = req.body;
+
+    if( name && 
+        description &&
+        genres && 
+        /*rating && */ 
+        background_image && //
+        released && //
+        price && 
+        isDisabled){
+        try{
+            let Create_Videogame = await Products.create({
+                name,
+                description,
+                rating,
+                metacriticRating,
+                esrb_rating,
+                background_image,
+                released,
+                requeriments_min,
+                requeriments_recomended,
+                price,
+                onSale,
+                isDisabled
+            });
+            const findGenre = await Genre.findAll({
+                where:{name: genres}
+            })
+            Create_Videogame.addGenre(findGenre);
+            res.status(200).send("Videogame Succesfully Created!")
+        }catch(e){
+            console.error(e);
+            res.status(401).send(e);
+        };
+    }else{
+        res.status(401).send("Error. Complete the missing fields!.")
+    };
+});
 
 module.exports = router;

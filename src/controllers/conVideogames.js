@@ -4,7 +4,7 @@ const { Products, Platforms, Genre} = require('../db');
 const {Op} = require('sequelize');
 
 
-router.get("/", async (req, res, next)=>{
+router.get("/", async (req, res)=>{
     try{
         let nameQuery = req.query.name;
         if (nameQuery) {
@@ -29,7 +29,7 @@ router.get("/", async (req, res, next)=>{
     }
 })
 
-router.get("/:id", async (req, res, next)=>{
+router.get("/:id", async (req, res)=>{
     try{ 
         let {id} = req.params
         if (isNaN(id)) {
@@ -59,46 +59,18 @@ router.get("/:id", async (req, res, next)=>{
 
 //let product_required = name && description && genre && rating && metacriticRating && esrb_rating && background_image && released && requeriments_min && requeriments_recomended && price && onSale && isDisabled
 router.post("/create", async (req,res)=>{
-    const {name, // no null
-        genres, //
-        description, //
-        rating, //
-        metacriticRating,
-        esrb_rating, 
-        background_image,
-        released,
-        requeriments_min,
-        requeriments_recomended,
-        price,
-        onSale,
-        platforms,
-        isDisabled} = req.body;
+    const {name, genres, description, rating, metacriticRating, esrb_rating, 
+        background_image, released, requeriments_min, requeriments_recomended,
+        price, onSale, platforms, isDisabled} = req.body;
 
-    if( name && 
-        description &&
-        genres && 
-        platforms &&
-        background_image && //
-        released && //
-        price && 
-        isDisabled){
+    if( name && description && genres && platforms && background_image &&
+        released && price && isDisabled){
         try{
             let slug = name.split(' ').join('-').toLowerCase();
             let Create_Videogame = await Products.create({
-                name,
-                slug,
-                description,
-                rating,
-                platforms,
-                metacriticRating,
-                esrb_rating,
-                background_image,
-                released,
-                requeriments_min,
-                requeriments_recomended,
-                price,
-                onSale,
-                isDisabled
+                name, slug, description, rating, platforms, metacriticRating, esrb_rating,
+                background_image, released, requeriments_min, requeriments_recomended,
+                price, onSale, isDisabled
             });
             const findGenre = await Genre.findAll({
                 where:{name: genres}

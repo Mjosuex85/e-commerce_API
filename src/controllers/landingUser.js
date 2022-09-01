@@ -1,8 +1,6 @@
 const { Router } = require('express');
 const jwt = require('jsonwebtoken');
-
 const { Users } = require('../db');
-
 const router = Router();
 
 function isAuthenticaded(req, res, next){

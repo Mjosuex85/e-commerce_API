@@ -84,23 +84,23 @@ router.get("/", async (req, res, next)=>{
         
             let nameQuery = req.query.name;
             if (nameQuery) {
+                let slug = nameQuery.split(' ').join('-').toLowerCase();
                 const fetchDbName = await Products.findAll({
                     //busca el nombre en la db
-                    where: { name: { [Op.iLike]: "%" + nameQuery + "%" } },
-                    order: [["name", "ASC"]],
+                    where: {slug: {[Op.like]: '%' + slug + '%'}},
                     include: [Genre, Platforms],
-                    raw: true,
                 });
                 // console.log(fetchDbName);
-                if(fetchDbName.length === 0){
+                /*if(fetchDbName.length === 0){
                     const fetchApiName = await axios.get(`http://localhost:3001/videogames/?name=${nameQuery}`);
                     res.status(200).send(fetchApiName);
-                }else{
+                }else{*/
                     res.status(200).send(fetchDbName);
-                }
+                //}
             }else{     
                 console.log("lo traje de la Db")
                 console.log(allProducts.length)
+                //poner nombres en minúsculas Genre
                 var dbAll = await Products.findAll({
                     include:[{
                         model: Genre,
@@ -130,28 +130,54 @@ router.get("/", async (req, res, next)=>{
 router.get("/:id", async (req, res, next)=>{
     try{ 
         let {id} = req.params
-        /*const response = await axios.get(`https://api.rawg.io/api/games/${id}?key=${process.env.API_KEY}`)
-        console.log(response)
-        var videogame = {
-                id: response.data.id,
-                name: response.data.name,
-                slug: response.data.slug,
-                description: response.data.description,
-                ratings: response.data.ratings,
-                background_img: response.data.background_image,
-                relesed: response.data.released,
-                metacriticRating: response.data.metacritic,
-                price: Math.round(((Math.random() * 70)*100)/100),
-                esrb_rating: response.data.esrb_rating,
-                platform: response.data.platform,
-        }*/
-        var details = await Products.findOne({
-            where: { id: id },
-            order: [["name", "ASC"]],
-            include: Genre, Platforms,
-            raw: true,
-        });
-        res.status(200).send(details);
+        console.log(typeof id)
+        console.log(isNaN(id));
+        if (isNaN(id)) {
+            var details = await Products.findOne({
+                where: { id: id },
+                order: [["name", "ASC"]],
+                include:[{
+                            model: Genre,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                        {
+                            model: Platforms,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                    ],         
+            });   
+        }else{
+            var details = await Products.findOne({
+                where: { id_api: id },
+                order: [["name", "ASC"]],
+                include:[{
+                            model: Genre,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                        {
+                            model: Platforms,
+                            attributes: ['name'],
+                            through: {
+                                attributes: [],
+                            },
+                        },
+                    ],         
+            });
+        }
+        if (!details) {
+            res.status(404).send(details);
+        }else{
+            res.status(200).send(details);
+        }
     }catch(err){
         console.log(err);
         res.status(401).send(err);

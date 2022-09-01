@@ -3,7 +3,7 @@ module.exports = (sequelize) => {
   sequelize.define('Users', {
     id: {
       type: DataTypes.INTEGER,
-      defaultValue: DataTypes.INTEGER,
+      autoIncrement: true,
       primaryKey: true,
     },
     username: {
@@ -27,13 +27,16 @@ module.exports = (sequelize) => {
       allowNull:false
     },
     profile_pic:{
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      defaultValue:'undefined'
     },
     isBanned:{
-      type: DataTypes.BOOLEAN
+      type: DataTypes.BOOLEAN, 
+      defaultValue: false
     },
     isAdmin:{
-      type: DataTypes.BOOLEAN
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   },{
     updatedAt: false

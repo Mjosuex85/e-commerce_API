@@ -14,7 +14,7 @@ router.get("/", async (req, res, next)=>{
     try{
         let allProducts = await Products.findAll()
         if(allProducts.length === 0){
-            // const response =  await axios.get(link_video)
+            // const response =  await axios.get(link_video) //
             let pedido = link_video.map((e)=>axios(e))
             let response = await Promise.all(pedido)
             response = response.map(e=>e.data.results)

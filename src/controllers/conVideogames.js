@@ -200,12 +200,13 @@ router.post("/create", async (req,res)=>{
         requeriments_recomended,
         price,
         onSale,
+        platforms,
         isDisabled} = req.body;
 
     if( name && 
         description &&
         genres && 
-        /*rating && */ 
+        platforms &&
         background_image && //
         released && //
         price && 
@@ -217,6 +218,7 @@ router.post("/create", async (req,res)=>{
                 slug,
                 description,
                 rating,
+                platforms,
                 metacriticRating,
                 esrb_rating,
                 background_image,
@@ -229,8 +231,12 @@ router.post("/create", async (req,res)=>{
             });
             const findGenre = await Genre.findAll({
                 where:{name: genres}
-            })
+            });
+            const findPlatforms = await Platforms.findAll({
+                where:{name: platforms}
+            });
             Create_Videogame.addGenre(findGenre);
+            Create_Videogame.addPlatforms(findPlatforms);
             res.status(200).send("Videogame Succesfully Created!")
         }catch(e){
             console.error(e);

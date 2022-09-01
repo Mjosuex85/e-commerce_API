@@ -101,6 +101,7 @@ router.get("/", async (req, res, next)=>{
             }else{     
                 console.log("lo traje de la Db")
                 console.log(allProducts.length)
+                //poner nombres en minúsculas Genre
                 var dbAll = await Products.findAll({
                     include:[{
                         model: Genre,

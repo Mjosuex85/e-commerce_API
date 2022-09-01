@@ -9,19 +9,28 @@ module.exports = (sequelize) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    id_api: {
+      type: DataTypes.INTEGER,    
+      
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },  
-    platforms: {
+    slug: {
       type: DataTypes.STRING,
       allowNull: false,
     },  
+     
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     rating: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,      
+    },    
+    metacriticRating: {
       type: DataTypes.INTEGER,
       defaultValue: 0,      
     },    
@@ -37,9 +46,9 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    trailer: {
-      type: DataTypes.STRING,      
-    },
+    // trailer: {
+    //   type: DataTypes.STRING,      
+    // },
     requeriments_recomended: {
       type: DataTypes.STRING, 
       defaultValue: "Has no Requeriments"     

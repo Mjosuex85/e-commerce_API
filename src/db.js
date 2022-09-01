@@ -49,8 +49,8 @@ Order.belongsToMany(Products, { through: "OrderProduct", timestamps:false})
 Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
 Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})
 
-Users.belongsToMany(Reviews, { through: "PlatformGame", timestamps:false})
-Reviews.belongsToMany(Users, { through: "PlatformGame", timestamps:false})
+Users.belongsToMany(Reviews, { through: "UserReviews", timestamps:false})
+Reviews.belongsToMany(Users, { through: "UserReviews", timestamps:false})
 
 Genre.belongsToMany(Products, { through: "ProductGenre", timestamps:false})
 Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})

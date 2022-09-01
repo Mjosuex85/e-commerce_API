@@ -12,14 +12,15 @@ router.get("/", async (req, res, next)=>{
             const fetchDbName = await Products.findAll({
                 //busca el nombre en la db
                 where: {slug: {[Op.like]: '%' + slug + '%'}},
-                include: [Genre, Platforms],
+                include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
+                        {model: Platforms, attributes: ['name'], through: { attributes: [] }}]
             });
             res.status(200).send(fetchDbName);
         }else{     
             var dbAll = await Products.findAll({
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
                         {model: Platforms, attributes: ['name'], through: { attributes: [] }}]
-            })
+            });
             res.status(200).send(dbAll)
         }    
     }catch(err){

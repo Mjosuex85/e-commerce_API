@@ -185,6 +185,28 @@ router.get("/:id", async (req, res, next)=>{
     }
 })
 
+//el primer valor del objeto DEBE SER id:xxxxxxxxxxxx
+router.put('/edit', async(req, res, next)=>{
+    try {      
+        let edit = req.body
+        let id= req.body.id
+        let keys = Object.keys(edit)
+        keys.shift()
+        let values = Object.values(edit)
+        values.shift()
+        
+        keys.map(async(k, i)=>{await Products.update({
+            [k]: values[i],
+                }, {
+            where: {
+                id: [id],
+            }})
+        });    
+       res.send("Juego editado!")
+    } catch (err) {
+        next(err)
+    }
+}) 
 
 //let product_required = name && description && genre && rating && metacriticRating && esrb_rating && background_image && released && requeriments_min && requeriments_recomended && price && onSale && isDisabled
 router.post("/create", async (req,res)=>{
@@ -246,5 +268,7 @@ router.post("/create", async (req,res)=>{
         res.status(401).send("Error. Complete the missing fields!.")
     };
 });
+
+
 
 module.exports = router;

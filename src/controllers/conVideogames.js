@@ -91,7 +91,7 @@ router.get("/", async (req, res, next)=>{
                     include: [Genre, Platforms],
                     raw: true,
                 });
-                console.log(fetchDbName);
+                // console.log(fetchDbName);
                 if(fetchDbName.length === 0){
                     const fetchApiName = await axios.get(`http://localhost:3001/videogames/?name=${nameQuery}`);
                     res.status(200).send(fetchApiName);
@@ -102,7 +102,21 @@ router.get("/", async (req, res, next)=>{
                 console.log("lo traje de la Db")
                 console.log(allProducts.length)
                 var dbAll = await Products.findAll({
-                    include: [Platforms, Genre]
+                    include:[{
+                        model: Genre,
+                        attributes: ['name'],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                    {
+                        model: Platforms,
+                        attributes: ['name'],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ]
                 })
                 res.status(200).send(dbAll)
             }

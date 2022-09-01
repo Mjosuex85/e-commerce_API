@@ -25,6 +25,10 @@ router.post('/', async (req, res )=>{
     } catch (error) {
         res.status(404).send(error.message)
     }
-});
+})
+
+router.get('/', (req, res) =>{
+    res.json({"message":'send a post'})
+})
 
 module.exports= router;

@@ -20,8 +20,8 @@ router.get("/", async (req, res, next)=>{
             response = response.map(e=>e.data.results)
             response= response[0].concat(response[1],response[2])
 
-            await axios.get("http://localhost:3001/genres");
-            await axios.get("http://localhost:3001/platforms");
+            await axios.get(`${process.env.URL}/genres`);
+            await axios.get(`${process.env.URL}/platforms`);
             
             
             var videogames = await response.map(async (game, i)=>{

@@ -5,21 +5,29 @@ const { Products, Platforms, Genre, Reviews } = require('../db')
 const {Op} = require('sequelize')
 
 
+const link_video = [`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page_size=40`,
+`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=5&page_size=40`,
+`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=11&page_size=40`];
+
 // console.log(Product)
 router.get("/", async (req, res, next)=>{
     try{
         let allProducts = await Products.findAll()
         if(allProducts.length === 0){
-            const response =  await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=10&page_size=100`)
-            
-            var videogames = await response.data.results.map(async (game)=>{
+            // const response =  await axios.get(link_video)
+            let pedido = link_video.map((e)=>axios(e))
+            let response = await Promise.all(pedido)
+            response = response.map(e=>e.data.results)
+            response= response[0].concat(response[1],response[2])
+
+            var videogames = await response.map(async (game)=>{
                 
                 let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
                 let description = detail.data.description;
                 
                 let esrb = game.esrb_rating
                 if (esrb === null){
-                    esrb="not"
+                    esrb="Not rated"
                 }else{
                     esrb = game.esrb_rating.name;
                 }

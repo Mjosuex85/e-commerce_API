@@ -148,8 +148,21 @@ router.get("/:id", async (req, res, next)=>{
         var details = await Products.findOne({
             where: { id: id },
             order: [["name", "ASC"]],
-            include: Genre, Platforms,
-            raw: true,
+            include:[{
+                        model: Genre,
+                        attributes: ['name'],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                    {
+                        model: Platforms,
+                        attributes: ['name'],
+                        through: {
+                            attributes: [],
+                        },
+                    },
+                ]   ,         
         });
         res.status(200).send(details);
     }catch(err){

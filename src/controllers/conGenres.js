@@ -1,4 +1,4 @@
-const Router = require('Express')
+const Router = require('express')
 const axios = require('axios')
 const {Genre} = require("../db.js")
 const router = Router()

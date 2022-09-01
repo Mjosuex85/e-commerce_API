@@ -1,6 +1,6 @@
 const Router = require('express');
 const router = Router();
-const { Products, Platforms, Genre} = require('../db');
+const { Products, Platforms, Genre, Screenshots} = require('../db');
 const {Op} = require('sequelize');
 
 
@@ -36,13 +36,15 @@ router.get("/:id", async (req, res)=>{
             var details = await Products.findOne({
                 where: { id: id },
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
-                        {model: Platforms, attributes: ['name'], through: { attributes: [] }}]         
+                        {model: Platforms, attributes: ['name'], through: { attributes: [] }},
+                        {model: Screenshots, attributes: ['image'], through: { attributes: [] }}]
             });   
         }else{
             var details = await Products.findOne({
                 where: { id_api: id },
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
-                        {model: Platforms, attributes: ['name'], through: { attributes: [] }}]         
+                        {model: Platforms, attributes: ['name'], through: { attributes: [] }},
+                        {model: Screenshots, attributes: ['image'], through: { attributes: [] }}]         
             });
         }
         if (!details) {

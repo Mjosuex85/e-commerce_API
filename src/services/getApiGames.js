@@ -1,8 +1,7 @@
 const axios = require('axios');
 
-async function getApiGames(Products, Platforms, Genre) {
+async function getApiGames(Products, Platforms, Genre, Screenshots) {
     try{
-        console.log(Products)
         const link_video = [`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page_size=40`,
         `https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=5&page_size=40`,
         `https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=11&page_size=40`];
@@ -13,12 +12,22 @@ async function getApiGames(Products, Platforms, Genre) {
         response = response.map(e=>e.data.results);
         response = response[0].concat(response[1],response[2]);
         
-        await response.map(async (game)=>{
+        response.forEach(async (game)=>{
             
             let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
             let genres = detail.data.genres.map((e) => e.name);
             let platforms = detail.data.platforms.map((e) => e.platform.name);
-            
+
+            let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.API_KEY}`);
+            let screenshots = screenshots_data.data.results;
+
+            screenshots.forEach((e) => {
+                Screenshots.create({
+                    id: e.id,
+                    image: e.image
+                });
+            })
+
             let description = detail.data.description_raw;
             
             let esrb = game.esrb_rating;
@@ -50,6 +59,11 @@ async function getApiGames(Products, Platforms, Genre) {
                 onSale: false,
             })
             
+            screenshots.forEach(async (e) => {
+                var screenDb = await Screenshots.findAll({ where: { id: e.id }});
+                dbProduct.addScreenshots(screenDb);
+            });
+
             genres.forEach(async (g) => {
                 var genreDb = await Genre.findAll({ where: { name:g } });
                 dbProduct.addGenre(genreDb);

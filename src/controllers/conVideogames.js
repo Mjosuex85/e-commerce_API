@@ -1,33 +1,91 @@
 const Router = require('Express')
 const axios = require('axios')
 const router = Router()
+const { Products, Platforms, Genre, Reviews } = require('../db')
+const {Op} = require('sequelize')
 
 
+const link_video = [`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page_size=40`,
+`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=5&page_size=40`,
+`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=11&page_size=40`];
 
+// console.log(Product)
 router.get("/", async (req, res, next)=>{
     try{
-        const response =  await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=10&page_size=100`)
-        var videogames = response.data.results.map((game)=>{
-            return {
-                id: game.id,
-                name: game.name,
-                slug: game.slug,
-                ratings: game.ratings,
-                background_img: game.background_image,
-                relesed: game.released,
-                metacriticRating: game.metacritic,
-                price: Math.round(((Math.random() * 70)*100)/100),
-                esrb_rating: game.esrb_rating,
-            }
-        })
-        if (req.query.name) {
-            slug = req.query.name.split(' ').join('-').toLowerCase();
-            console.log(slug);
-            var game = videogames.filter(e => e.slug === slug);
-            res.send(game)
+        let allProducts = await Products.findAll()
+        if(allProducts.length === 0){
+            // const response =  await axios.get(link_video)
+            let pedido = link_video.map((e)=>axios(e))
+            let response = await Promise.all(pedido)
+            response = response.map(e=>e.data.results)
+            response= response[0].concat(response[1],response[2])
+
+            var videogames = await response.map(async (game)=>{
+                
+                let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
+                let description = detail.data.description;
+                
+                let esrb = game.esrb_rating
+                if (esrb === null){
+                    esrb="Not rated"
+                }else{
+                    esrb = game.esrb_rating.name;
+                }
+                
+                let requirements = game.requirements_en;
+                if (!requirements){
+                    requirements = {}
+                    requirements.recommended = 'No requirements';
+                    requirements.minimum = 'No requirements';
+                }
+                
+                let  dbProduct = await Products.findOrCreate({
+                    
+                    where:{
+                        id_api: game.id,
+                        name: game.name,
+                        description: description,
+                        rating: game.ratings[0].percent,
+                        esrb_rating: esrb,
+                        background_image: game.background_image,
+                        released: game.released,
+                        requeriments_recomended: requirements.recommended,
+                        requeriments_min: requirements.minimum,
+                        price: Math.round(((Math.random() * 70)*100)/100),
+                        slug: game.slug,
+                        metacriticRating: game.metacritic,
+                        isDisabled: false,
+                        onSale: false,
+                    }})
+                    
+                    // console.log("videogames::____::");
+                    // console.log(dbProduct[0].dataValues)
+                    return dbProduct[0].dataValues
+                    // {
+                        //     id: game.id,
+                        //     name: game.name,
+                        //     slug: game.slug,
+                        //     rating: game.ratings[0].percent,
+                        //     background_image: game.background_image,
+                        //     relesed: game.released,
+                        //     metacriticRating: game.metacritic,
+                        //     price: Math.round(((Math.random() * 70)*100)/100),
+                        //     esrb_rating: game.esrb_rating,
+                        // }
+                    })
+
+                    // console.log(videogames)
+                    Promise.all(videogames)
+                    .then((arr)=>{   
+                        console.log('lo traje de la api')                     
+                        res.send(arr)
+                    })
+                    
         }else{
-            res.send(videogames)
-        }
+            console.log("lo traje de la Db")
+            console.log(allProducts.length)
+            res.send(allProducts)
+        }        
     }catch(err){
         next(err)
     }

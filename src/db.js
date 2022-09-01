@@ -37,23 +37,23 @@ const { Products, Users, Reviews, Platforms, Order, Genre } = sequelize.models;
 
 // console.log(sequelize.models)
 
-Products.belongsToMany(Users, { through: "Favorites"})
-Users.belongsToMany(Products, { through: "Favorites"})
+Products.belongsToMany(Users, { through: "Favorites", timestamps: false})
+Users.belongsToMany(Products, { through: "Favorites", timestamps: false })
 
-Products.belongsToMany(Users, { through: "Owned"})
-Users.belongsToMany(Products, { through: "Owned"})
+Products.belongsToMany(Users, { through: "Owned", timestamps: false})
+Users.belongsToMany(Products, { through: "Owned", timestamps: false})
 
-Products.belongsToMany(Order, { through: "OrderProduct"})
-Order.belongsToMany(Products, { through: "OrderProduct"})
+Products.belongsToMany(Order, { through: "OrderProduct", timestamps:false})
+Order.belongsToMany(Products, { through: "OrderProduct", timestamps:false})
 
-Products.belongsToMany(Platforms, { through: "PlatformGame"})
-Platforms.belongsToMany(Products, { through: "PlatformGame"})
+Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
+Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})
 
-Users.belongsToMany(Reviews, { through: "PlatformGame"})
-Reviews.belongsToMany(Users, { through: "PlatformGame"})
+Users.belongsToMany(Reviews, { through: "UserReviews", timestamps:false})
+Reviews.belongsToMany(Users, { through: "UserReviews", timestamps:false})
 
-Genre.belongsToMany(Products, { through: "ProductGenre"})
-Products.belongsToMany(Genre, { through: "ProductGenre"})
+Genre.belongsToMany(Products, { through: "ProductGenre", timestamps:false})
+Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 
 
 

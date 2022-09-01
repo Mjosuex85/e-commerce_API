@@ -11,10 +11,10 @@ const keySalt = parseInt(KEY_SALT);
 
 
 passport.use(new LocalStrategy( async function verify(username, password, cb){
-    const user = await Users.findOne({where:{email: username}})
-    const passwordKey = await Users.findOne({where:{email: username}})
+    const user = await Users.findOne({where:{email: username}}),
+    passwordKey = await Users.findOne({where:{email: username}});
     let passwordMatch;
-    bcrypt.hash(password, keySalt, async function (err, hash) {
+    bcrypt.compare(password, passwordKey, function (err, hash) {
         if(err) throw new Error('something is wrong with the password at Login') 
         passwordMatch = passwordKey === hash ? true : false;
     })

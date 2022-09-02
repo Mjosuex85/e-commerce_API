@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const passport = require('passport');
-var GoogleStrategy = require('passport-google-oidc');
+const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 
 const { Users } = require('../../db');
 

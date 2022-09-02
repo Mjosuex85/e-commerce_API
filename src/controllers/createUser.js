@@ -1,8 +1,11 @@
 const Router = require('express')
 const router = Router()
+
 const bcrypt = require('bcrypt');
+
 const { Users } = require('../db.js');
 const { validateUserRegister } = require('./helpers/signupHelper.js');
+
 const { KEY_SALT } = process.env;
 const keySalt = parseInt(KEY_SALT);
 

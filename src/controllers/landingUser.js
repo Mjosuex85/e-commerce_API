@@ -38,7 +38,7 @@ router.get('/buy', isAuthenticaded, async(req, res)=>{
         userAuth.addProducts(productId, {through: 'Order'});
         res.send('Buy succesfully');
     } catch (error) {
-        
+        res.status(404).json({error: error.message});
     }
 })
 module.exports = router;

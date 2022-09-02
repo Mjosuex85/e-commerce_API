@@ -185,16 +185,18 @@ router.get("/:id", async (req, res, next)=>{
     }
 })
 
-//el primer valor del objeto DEBE SER id:xxxxxxxxxxxx
+//el primer key/value del objeto req.body DEBE SER id:xxxxxxxxxxxx
 router.put('/edit', async(req, res, next)=>{
     try {      
         let edit = req.body
         let id= req.body.id
+
         let keys = Object.keys(edit)
         keys.shift()
+
         let values = Object.values(edit)
-        values.shift()
-        
+        values.shift() 
+
         keys.map(async(k, i)=>{await Products.update({
             [k]: values[i],
                 }, {
@@ -202,7 +204,7 @@ router.put('/edit', async(req, res, next)=>{
                 id: [id],
             }})
         });    
-       res.send("Juego editado!")
+       res.status(200).send("Juego editado!")
     } catch (err) {
         next(err)
     }

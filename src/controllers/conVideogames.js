@@ -1,8 +1,10 @@
 const Router = require('express')
 const axios = require('axios')
 const router = Router()
-const { Products, Platforms, Genre } = require('../db')
+const { Products, Platforms, Genre, Reviews } = require('../db')
 const {Op} = require('sequelize')
+const Product = require('../models/Product')
+
 
 const link_video = [`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page_size=40`,
 `https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=5&page_size=40`,

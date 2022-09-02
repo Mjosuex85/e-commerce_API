@@ -38,7 +38,7 @@ router.get('/google', passport.authenticate('google',
 { scope: [ 'email', 'profile' ] }
 ));
 
-router.get('/auth/google/failure', (req, res) => {
+router.get('/google/failure', (req, res) => {
     res.send('Failed to authenticate..');
 });
 

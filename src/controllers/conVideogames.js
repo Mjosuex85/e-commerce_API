@@ -10,7 +10,7 @@ router.get("/", async (req, res)=>{
         if (nameQuery) {
             let slug = nameQuery.split(' ').join('-').toLowerCase();
             const fetchDbName = await Products.findAll({
-                //busca el nombre en la db
+                //busca el nombre en la db //
                 where: {slug: {[Op.like]: '%' + slug + '%'}},
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
                         {model: Platforms, attributes: ['name'], through: { attributes: [] }}]

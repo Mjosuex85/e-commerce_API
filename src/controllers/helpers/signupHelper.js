@@ -13,7 +13,7 @@ async function validateUserRegister(username, name, lastname, email, password){
     passwordValidate = /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,8}$/.test(password);
     
     if(usernameValidate && emailValidate && nameValidate && lastnameValidate && passwordValidate) return true
-    // console.log(usernameValidate, emailValidate)
+    
     throw new Error('Something is wrong with the register')
 }
 

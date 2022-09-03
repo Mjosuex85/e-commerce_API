@@ -16,7 +16,7 @@ router.use("/genres", conGenres);
 router.use("/platforms", conPlatforms);
 router.use("/login", loginUser);
 router.use("/logout", logout);
-router.use("/signup", createUser);
+router.use("/signin", createUser);
 router.use("/user", landingUser);
 router.use("/users", UserRouter)
 

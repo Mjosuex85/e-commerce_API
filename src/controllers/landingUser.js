@@ -18,24 +18,24 @@ router.get('/', isAuthenticaded, async(req, res)=>{
     }
 })
 
-router.get('/addFavorite', isAuthenticaded, async(req, res)=>{
+router.get('/addFavorite/:idProduct', isAuthenticaded, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;
-        const { productId }= req.query;
+        const { idProduct }= req.params;
         const userAuth = await Users.findByPk(id);
-        userAuth.addProducts(productId, {through: 'Favorites'});
+        userAuth.addProducts(idProduct, {through: 'Favorites'});
         res.send('Added to Favorites');
     } catch (error) {
         res.status(404).json({error: error.message});
     }
 })
 
-router.get('/buy', isAuthenticaded, async(req, res)=>{
+router.get('/buy:idProduct', isAuthenticaded, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;
-        const { productId }= req.query;
+        const { idProduct }= req.query;
         const userAuth = await Users.findByPk(id);
-        userAuth.addProducts(productId, {through: 'Order'});
+        userAuth.addProducts(idProduct, {through: 'Order'});
         res.send('Buy succesfully');
     } catch (error) {
         res.status(404).json({error: error.message});

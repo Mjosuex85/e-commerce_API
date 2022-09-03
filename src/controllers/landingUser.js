@@ -40,5 +40,25 @@ router.get('/buy', isAuthenticaded, async(req, res)=>{
     } catch (error) {
         res.status(404).json({error: error.message});
     }
-})
+});
+
+router.get('/find/:email', async(req, res)=>{
+    try {
+        const {email} = req.params;
+        const useEmail = await Users.findOne({where:{email}});
+        res.json({'user': useEmail});
+    } catch (error) {
+        res.status(404).json({error: error.message});
+    }
+});
+
+router.get('/find/:username', async(req, res)=>{
+    try {
+        const {username} = req.params;
+        const useEmail = await Users.findOne({where:{username}});
+        res.json({'user': useEmail});
+    } catch (error) {
+        res.status(404).json({error: error.message});
+    }
+});
 module.exports = router;

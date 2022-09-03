@@ -3,8 +3,8 @@ const { Router } = require('express');
 const conVideogames = require ("../controllers/conVideogames")
 const conGenres = require ("../controllers/conGenres")
 const conPlatforms = require ("../controllers/conPlatforms")
-const loginUser = require("../controllers/login-logout/loginUser")
-const logout = require("../controllers/login-logout/logout")
+const loginUser = require("../controllers/loginUser")
+const logout = require("../controllers/logout")
 const createUser = require('../controllers/createUser')
 const landingUser = require('../controllers/landingUser')
 

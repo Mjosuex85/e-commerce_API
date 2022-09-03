@@ -1,46 +1,89 @@
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const passport = require('passport')
-const session = require('express-session');
+require('dotenv').config();
+const { Sequelize } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
+const getApiGames = require('./services/getApiGames');
+const getApiPlatforms = require('./services/getApiPlatforms');
+const getApiGenres = require('./services/getApiGenres');
+const {
+  DB_USER, DB_PASSWORD, DB_HOST, DB_NAME
+} = process.env;
 
-require('./db.js');
 
-const server = express();
+let sequelize =
+  process.env.NODE_ENV === "production"
+    ? new Sequelize({
+        database: DB_NAME,
+        dialect: "postgres",
+        host: DB_HOST,
+        port: 5432,
+        username: DB_USER,
+        password: DB_PASSWORD,
+        pool: {
+          max: 3,
+          min: 1,
+          idle: 10000,
+        },
+        dialectOptions: {
+          ssl: {
+            require: true,
+            // Ref.: https://github.com/brianc/node-postgres/issues/2009
+            rejectUnauthorized: false,
+          },
+          keepAlive: true,
+        },
+        ssl: true,
+      })
+    : new Sequelize(
+        `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/videogames`,
+        { logging: false, native: false }
+      );
+      
+/*const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@localhost/videogames`, {
+  logging: false, // set to console.log to see the raw SQL queries
+  native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+});*/
+const basename = path.basename(__filename);
 
-const routes = require('./routes/index.js');
+const modelDefiners = [];
 
-server.name = 'API';
+fs.readdirSync(path.join(__dirname, '/models'))
+  .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
+  .forEach((file) => {
+    modelDefiners.push(require(path.join(__dirname, '/models', file)));
+  });
 
-const {KEY_SECRET}= process.env;
-server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
-server.use(bodyParser.json({ limit: '50mb' }));
-server.use(cookieParser(KEY_SECRET));
-server.use(morgan('dev'));
-server.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-  next();
-});
-server.use(session({
-  secret: KEY_SECRET,
-  resave: false,
-  saveUninitialized: false,
-}));
-server.use(passport.initialize());
-server.use(passport.session());
-server.use(passport.authenticate(KEY_SECRET));
-server.use('/', routes);
+modelDefiners.forEach(model => model(sequelize));
 
-// Error catching endware.
-server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
-  const status = err.status || 500;
-  const message = err.message || err;
-  console.error(err);
-  res.status(status).send(message);
-});
+let entries = Object.entries(sequelize.models);
+let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
+sequelize.models = Object.fromEntries(capsEntries);
 
-module.exports = server;
+const { Products, Users, Reviews, Platforms, Genre, Screenshots } = sequelize.models;
+
+Products.belongsToMany(Users, { through: "Favorites", timestamps: false})
+Users.belongsToMany(Products, { through: "Favorites", timestamps: false })
+
+Products.belongsToMany(Users, { through: "Order"})
+Users.belongsToMany(Products, { through: "Order"})
+
+Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
+Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})
+
+Products.hasMany(Reviews,{foreignKey: 'reviewID'})
+Reviews.belongsTo(Products,)
+
+Genre.belongsToMany(Products, { through: "ProductGenre", timestamps:false})
+Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
+
+Screenshots.belongsToMany(Products, { through: "ProductScreenshot", timestamps:false})
+Products.belongsToMany(Screenshots, { through: "ProductScreenshot", timestamps:false})
+
+getApiGames(Products, Platforms, Genre, Screenshots);
+getApiPlatforms(Platforms);
+getApiGenres(Genre);
+
+module.exports = {
+  ...sequelize.models, 
+  conn: sequelize,  
+};

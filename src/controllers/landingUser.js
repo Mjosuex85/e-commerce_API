@@ -1,6 +1,6 @@
 const { Router } = require('express');
-const { Users } = require('../db');
 
+const { Users } = require('../db');
 const router = Router();
 
 function isAuthenticaded(req, res, next){

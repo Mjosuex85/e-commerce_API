@@ -3,7 +3,7 @@ const passport = require('passport');
 const bcrypt = require('bcrypt')
 const LocalStrategy = require('passport-local');
 
-const { Users } = require('../../db');
+const { Users } = require('../db');
 
 const loginGoogle = require('./loginGoogle');
 

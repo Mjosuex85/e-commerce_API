@@ -33,7 +33,7 @@ passport.deserializeUser(async (id, done) => {
 
 router.post('/', passport.authenticate('local', {
     successRedirect: `/user`,
-    failureRedirect: '/signup'
+    failureRedirect: '/signin'
 }));
 
 router.get('/', (req, res) =>{

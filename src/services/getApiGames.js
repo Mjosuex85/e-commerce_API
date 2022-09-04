@@ -6,7 +6,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
         `https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=5&page_size=40`,
         `https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=11&page_size=40`];
         
-        // const response =  await axios.get(link_video)
+        // const response =  await axios.get(link_video) /
         let pedido = link_video.map((e)=>axios(e));
         let response = await Promise.all(pedido).catch((err)=>console.log(err));
         response = response.map(e=>e.data.results);

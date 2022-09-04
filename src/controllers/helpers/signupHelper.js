@@ -6,11 +6,11 @@ async function validateUserRegister(username, name, lastname, email, password){
     emailValidate = await Users.findOne({ where: { email } }) !== null? false:
     /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email),
 
-    nameValidate = /(^[a-zA-Z]{0,20}$)/.test(name),
+    nameValidate = /(^[a-zA-Z]{0,20}$)/.test(lastname),
 
     lastnameValidate = /(^[a-zA-Z]{0,20}$)/.test(lastname),
     
-    passwordValidate = /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,8}$/.test(password);
+    passwordValidate = /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}$/.test(password);
     
     if(usernameValidate && emailValidate && nameValidate && lastnameValidate && passwordValidate) return true
     

@@ -14,16 +14,16 @@ router.use('/auth', loginGoogle);
 passport.use(new LocalStrategy( async function verify(email, password, cb){
     const user = await Users.findOne({where:{email}});
     if(user && !user.isBanned){
-        const passwordMatch = await bcrypt.compare(password, user.password)
-        if(email === user.email && passwordMatch){
-            return cb(null, {id:user.id, email:user.email});
-        }
-    }
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if(email === user.email && passwordMatch){
+        return cb(null, {id:user.id, email:user.email});
+    }}
     return cb(null, false);
 }));
 
 passport.serializeUser((user, done) =>{
-    done(null, user.id)
+    console.log(user)
+    done('what', user.id)
 });
 
 passport.deserializeUser(async (id, done) => {
@@ -32,12 +32,12 @@ passport.deserializeUser(async (id, done) => {
 });
 
 router.post('/', passport.authenticate('local', {
-    successRedirect: `/user`,
-    failureRedirect: '/signin'
+    successRedirect: "/user" ,
+    failureRedirect: "/login"
 }));
 
 router.get('/', (req, res) =>{
-    res.json({"message":'send a post'})
+    res.json({"message":'Not Autheticaded'})
 });
 
 module.exports = router;

@@ -89,8 +89,9 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
             return dbProduct.dataValues;
         })
     }catch(err){
-        console.log('error de getApiGames')
+        console.log('error de getApiGames');
         console.log(err);
+        getApiGames(Products, Platforms, Genre, Screenshots);
     }
 }
 

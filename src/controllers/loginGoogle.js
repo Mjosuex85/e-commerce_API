@@ -6,7 +6,6 @@ const { Users } = require('../db');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL} = process.env;
 
-
 const router = Router();
 
 passport.use(new GoogleStrategy({
@@ -19,6 +18,7 @@ passport.use(new GoogleStrategy({
 }));
 
 passport.serializeUser((user, done) =>{
+    console.log(user)
     done(null, user.id)
 });
 

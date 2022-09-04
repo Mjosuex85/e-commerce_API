@@ -18,6 +18,14 @@ router.get('/', isAuthenticaded, async(req, res)=>{
     }
 })
 
+router.get('/auth', async(req, res)=>{
+    try {      
+        res.json({user: req.user});
+    } catch (error) {
+        res.status(404).json({error: error.message});
+    }
+})
+
 router.get('/addFavorite/:idProduct', isAuthenticaded, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;

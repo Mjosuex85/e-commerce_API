@@ -8,9 +8,12 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
         
         // const response =  await axios.get(link_video)
         let pedido = link_video.map((e)=>axios(e));
-        let response = await Promise.all(pedido);
+        let response = await Promise.all(pedido).catch((err)=>console.log(err));
         response = response.map(e=>e.data.results);
         response = response[0].concat(response[1],response[2]);
+
+        var randomSale = [1,3,5,7,9]
+        var saleAmount = 9
         
         response.forEach(async (game)=>{
             
@@ -41,6 +44,17 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
                 requirements.recommended = 'No requirements';
                 requirements.minimum = 'No requirements';
             }
+
+            let onSale = false;
+
+            if (saleAmount !== 0) {
+                if(randomSale.includes(Math.trunc(Math.random() * 11))){
+                    console.log('hola')
+                    onSale = true;
+                    saleAmount -= 1;
+                }
+
+            }
             
             let  dbProduct = await Products.create({                                       
                 id_api: game.id,
@@ -52,11 +66,11 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
                 released: game.released,
                 requeriments_recomended: requirements.recommended,
                 requeriments_min: requirements.minimum,
-                price: Math.round(((Math.random() * 70)*100)/100),
+                price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
                 slug: game.slug,
                 metacriticRating: game.metacritic,
                 isDisabled: false,
-                onSale: false,
+                onSale: onSale,
             })
             
             screenshots.forEach(async (e) => {
@@ -76,6 +90,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
             return dbProduct.dataValues;
         })
     }catch(err){
+        console.log('error de getApiGames')
         console.log(err);
     }
 }

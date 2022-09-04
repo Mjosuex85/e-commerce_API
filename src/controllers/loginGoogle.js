@@ -3,17 +3,15 @@ const passport = require('passport');
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 
 const { Users } = require('../db');
-const { UserAuth } = require('../models/userAuth');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL} = process.env;
-
 
 const router = Router();
 
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: `${URL}login/auth/google/redirect`,
+    callbackURL: `${URL}/login/auth/google/redirect`,
     passReqToCallback: true,
 }, async function(request, accessToken, refreshToken, profile, done) {
     return done(null, profile);

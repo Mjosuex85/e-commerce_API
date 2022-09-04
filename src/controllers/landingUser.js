@@ -5,7 +5,6 @@ const router = Router();
 
 function isAuthenticaded(req, res, next){
     if(req.isAuthenticated()) return next();
-
     res.redirect('/login');
 }
 
@@ -14,6 +13,14 @@ router.get('/', isAuthenticaded, async(req, res)=>{
         const {id} = req.user.dataValues;
         const userAuth = await Users.findOne({ where: {id}, include:'Products'});
         res.json({message: 'Welcome '+ userAuth.name, user: userAuth});
+    } catch (error) {
+        res.status(404).json({error: error.message});
+    }
+})
+
+router.get('/auth', async(req, res)=>{
+    try {      
+        res.json({user: req.user});
     } catch (error) {
         res.status(404).json({error: error.message});
     }

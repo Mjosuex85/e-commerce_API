@@ -49,7 +49,6 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
 
             if (saleAmount !== 0) {
                 if(randomSale.includes(Math.trunc(Math.random() * 11))){
-                    console.log('hola')
                     onSale = true;
                     saleAmount -= 1;
                 }

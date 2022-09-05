@@ -17,7 +17,9 @@ passport.use(new LocalStrategy( async function verify(email, password, cb){
     let passwordMatch = await bcrypt.compare(password, user.dataValues.password)
     console.log(passwordMatch);
     //passwordMatch = true;
-    console.log(user.email)
+    console.log(user.email);
+    console.log(user.dataValues.email);
+    console.log(email);
     if(email === user.dataValues.email && passwordMatch){
         return cb(null, {id:user.id, email:user.email});
     }}

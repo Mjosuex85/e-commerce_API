@@ -2,6 +2,7 @@ const Router = require('express');
 const router = Router();
 const { Products, Platforms, Genre, Screenshots} = require('../db');
 const {Op} = require('sequelize');
+const axios = require('axios');
 
 
 router.get("/", async (req, res)=>{
@@ -11,7 +12,9 @@ router.get("/", async (req, res)=>{
             let slug = nameQuery.split(' ').join('-').toLowerCase();
 
             //pide resultados a la API 
-            const fetchApiName= await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&search=${nameQuery}`);
+            let fetchApiName= await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&search=${nameQuery}`);
+
+            fetchApiName = fetchApiName.data.results
 
             const fetchDbName = await Products.findAll({
                 //busca el nombre en la db
@@ -27,13 +30,38 @@ router.get("/", async (req, res)=>{
 
             // const dataArr = new Set(apiSinDb);            
             // apiSinDb = [...dataArr];
-
+            
             //agega propiedad "notInStock" a los elementos traídos de la API, ya filtrados
-            fetchApiName.forEach(p=>p.notInStock=true)
+            console.log(fetchApiName[0])
+            fetchApiName = fetchApiName.map(p=>{
+                return {   
+                    id: p.id,
+                    name: p.name,
+                    description: p.description,
+                    rating: p.ratings[0]?.percent,
+                    esrb_rating: p.esrb,
+                    background_image: p.background_image,
+                    released: p.released,
+                    requeriments_recomended: "",
+                    requeriments_min: "",
+                    // price: Math.round(((Math.random() * 70)*100)/100),
+                    slug: p.slug,
+                    metacriticRating: p.metacritic,
+                    // screenshots: short_screenshots&&short_screenshots,
+                    // onSale: false,
+                    notInStock: false,
+                    platforms: p.platforms,
+            }})
+
+            // console.log("fetchApiName---------------")
 
             let finalSearch = fetchDbName.concat(fetchApiName)
             
+            // res.status(200).send("finalSearch-.---.-.-.");
+            // res.status(200).send(fetchApiName);
             res.status(200).send(finalSearch);
+
+
         }else{     
             var dbAll = await Products.findAll({
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},

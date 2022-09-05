@@ -3,6 +3,7 @@ const passport = require('passport');
 const GoogleStrategy = require( 'passport-google-oauth2').Strategy;
 
 const { Users, AuthUsers } = require('../db');
+
 const validateUserAuth = require('./helpers/loginGoogleHelper');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL} = process.env;
@@ -20,6 +21,7 @@ passport.use(new GoogleStrategy({
     console.log(user)
     return cb(null, user);
 }));
+
 
 passport.serializeUser((user, done) =>{
     done(null, user.id)
@@ -44,6 +46,27 @@ router.get('/google', passport.authenticate('google',
 
 router.get('/google/failure', (req, res) => {
     res.send('Failed to authenticate..');
+});*/
+
+passport.serializeUser((user, done) =>{
+    console.log('serializeUser: ' + user)
+    done(null, user.id)
+});
+
+passport.deserializeUser(async (id, done) => {
+    const user = await Users.findByPk(id) 
+    console.log('deserializeUser: ' + user)
+    done(null, user)
+});
+
+router.post('/', passport.authenticate('local', {
+    successRedirect: "/user" ,
+    failureRedirect: "/login"
+}));
+
+router.get('/', (req, res) =>{
+    console.log('Not Autheticaded')
+    res.json({"message":'Not Autheticaded'})
 });
 
 module.exports = router;

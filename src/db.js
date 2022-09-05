@@ -59,7 +59,7 @@ let entries = Object.entries(sequelize.models);
 let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
 sequelize.models = Object.fromEntries(capsEntries);
 
-const { Products, Users, Reviews, Platforms, Genre, Screenshots, AuthUsers } = sequelize.models;
+const { Products, Users, Reviews, Platforms, Genre, Screenshots, AuthUsers, UsedGenre , UsedPlatforms } = sequelize.models;
 
 Products.belongsToMany(Users, { through: "Favorites", timestamps: false})
 Users.belongsToMany(Products, { through: "Favorites", timestamps: false })
@@ -85,9 +85,9 @@ Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 Screenshots.belongsToMany(Products, { through: "ProductScreenshot", timestamps:false})
 Products.belongsToMany(Screenshots, { through: "ProductScreenshot", timestamps:false})
 
-//getApiPlatforms(Platforms);
-//getApiGenres(Genre);
-//getApiGames(Products, Platforms, Genre, Screenshots);
+getApiPlatforms(Platforms);
+getApiGenres(Genre);
+getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, UsedPlatforms);
 
 module.exports = {
   ...sequelize.models, 

@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-async function getApiGames(Products, Platforms, Genre, Screenshots) {
+async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, UsedPlatforms) {
     try{
         const link_video = [`https://api.rawg.io/api/games?key=${process.env.API_KEY}&page_size=40`,
         `https://api.rawg.io/api/games?key=${process.env.API_KEY}&page=5&page_size=40`,
@@ -15,8 +15,8 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
 
         var randomSale = [1,3,5,7,9]
         var saleAmount = 9
-        
-        response.forEach(async (game)=>{
+
+        await response.forEach(async (game)=>{
             
             let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
             let genres = detail.data.genres.map((e) => e.name);
@@ -79,16 +79,21 @@ async function getApiGames(Products, Platforms, Genre, Screenshots) {
             });
 
             genres.forEach(async (g) => {
+                let find = await UsedGenre.findOrCreate({
+                    where: { name: g },
+                  });
                 var genreDb = await Genre.findAll({ where: { name:g } });
                 dbProduct.addGenre(genreDb);
             });
             
             platforms.forEach(async (p) => {
+                let find = await UsedPlatforms.findOrCreate({
+                    where: { name: p },
+                  });
                 var platformDb = await Platforms.findAll({ where: { name:p } });
                 dbProduct.addPlatforms(platformDb);
             });
-            return dbProduct.dataValues;
-        })
+        });
     }catch(err){
         console.log('error de getApiGames');
         console.log(err);

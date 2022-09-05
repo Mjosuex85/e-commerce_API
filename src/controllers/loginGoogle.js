@@ -1,37 +1,39 @@
 const { Router } = require('express');
 const passport = require('passport');
-const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
+const GoogleStrategy = require( 'passport-google-oauth2').Strategy;
 
-const { Users } = require('../db');
-// const { UserAuth } = require('../models/userAuth');
+const { AuthUsers } = require('../db');
+const validateUserAuth = require('./helpers/loginGoogleHelper');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL} = process.env;
 
-
 const router = Router();
+
+const {URL_ALLOWED} = process.env
 
 passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: `${URL}login/auth/google/redirect`,
-    passReqToCallback: true,
-}, async function(request, accessToken, refreshToken, profile, done) {
-    return done(null, profile);
+    callbackURL: `${URL}/login/auth/google/redirect`,
+}, async function(request, accessToken, refreshToken, profile, cb) {
+    const user = await validateUserAuth(profile)
+    
+    return cb(null, user);
 }));
 
 passport.serializeUser((user, done) =>{
     console.log(user)
-    done(null, user.id)
+    done(null, user.authID)
 });
 
 passport.deserializeUser(async (id, done) => {
-    const user = await Users.findByPk(id) 
+    const user = await AuthUsers.findByPk(id) 
     done(null, user)
 });
 
 router.get( '/google/redirect',
   passport.authenticate( 'google', {
-    successRedirect: '/user/auth',
+    successRedirect: URL_ALLOWED+'/home',
     failureRedirect: '/auth/google/failure', 
     session:true
   })

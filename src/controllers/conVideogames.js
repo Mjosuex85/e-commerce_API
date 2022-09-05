@@ -1,6 +1,6 @@
 const Router = require('express');
 const router = Router();
-const { Products, Platforms, Genre, Screenshots} = require('../db');
+const { Products, Platforms, Genre, Screenshots, UsedPlatforms, UsedGenre } = require('../db');
 const {Op} = require('sequelize');
 const axios = require('axios');
 
@@ -128,6 +128,21 @@ router.post("/create", async (req,res)=>{
             });
             Create_Videogame.addGenre(findGenre);
             Create_Videogame.addPlatforms(findPlatforms);
+
+
+            platforms.map(async (e) => {
+                let find = await UsedPlatforms.findOrCreate({
+                    where: { name: e },
+                });
+            })
+            
+            genres.map(async (e) => {
+                let find2 = await UsedGenre.findOrCreate({
+                    where: { name: e },
+                });
+            })
+
+            
             res.status(200).send("Videogame Succesfully Created!")
         }catch(e){
             console.error(e);

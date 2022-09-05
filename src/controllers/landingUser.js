@@ -41,7 +41,7 @@ router.get('/addFavorite/:idProduct', isAuthenticaded, async(req, res)=>{
 router.get('/buy/:idProduct', isAuthenticaded, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;
-        const { idProduct }= req.query;
+        const { idProduct }= req.params;
         const userAuth = await Users.findByPk(id);
         userAuth.addProducts(idProduct, {through: 'Order'});
         res.send('Buy succesfully');

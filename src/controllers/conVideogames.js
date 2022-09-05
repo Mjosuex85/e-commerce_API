@@ -28,10 +28,8 @@ router.get("/", async (req, res)=>{
                 fetchApiName = fetchApiName.filter(g => dbG.id_api !== g.id)
             })
 
-            // const dataArr = new Set(apiSinDb);            
-            // apiSinDb = [...dataArr];
             
-            //agega propiedad "notInStock" a los elementos traídos de la API, ya filtrados
+            //dá formato y agega propiedad "notInStock" a los elementos traídos de la API, ya filtrados
             console.log(fetchApiName[0])
             fetchApiName = fetchApiName.map(p=>{
                 return {   
@@ -49,8 +47,8 @@ router.get("/", async (req, res)=>{
                     metacriticRating: p.metacritic,
                     // screenshots: short_screenshots&&short_screenshots,
                     // onSale: false,
-                    notInStock: false,
-                    platforms: p.platforms,
+                    inStock: false,
+                    platforms: p.platforms.forEach(p=>p.name),
             }})
 
             // console.log("fetchApiName---------------")

@@ -22,7 +22,7 @@ passport.use(new GoogleStrategy({
 }));
 
 passport.serializeUser((user, done) =>{
-    done(null, user.authID)
+    done(null, user.id)
 });
 
 passport.deserializeUser(async (id, done) => {

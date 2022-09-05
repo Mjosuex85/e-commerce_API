@@ -25,13 +25,13 @@ passport.use(new LocalStrategy( async function verify(email, password, cb){
 }));
 
 passport.serializeUser((user, done) =>{
-    console.log(user)
+    console.log('serializeUser: ' + user)
     done(null, user.id)
 });
 
 passport.deserializeUser(async (id, done) => {
     const user = await Users.findByPk(id) 
-    console.log(user);
+    console.log('serializeUser: ' + user)
     done(null, user)
 });
 

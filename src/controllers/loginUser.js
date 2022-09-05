@@ -13,6 +13,7 @@ router.use('/auth', loginGoogle);
 
 passport.use(new LocalStrategy( async function verify(email, password, cb){
     const user = await Users.findOne({where:{email}});
+    console.log(user)
     if(user && !user.isBanned){
     let passwordMatch = await bcrypt.compare(password, user.dataValues.password)
     console.log(passwordMatch);
@@ -25,7 +26,6 @@ passport.use(new LocalStrategy( async function verify(email, password, cb){
 }));
 
 passport.serializeUser((user, done) =>{
-    console.log('serializeUser: ' + user)
     done(null, user.id)
 });
 

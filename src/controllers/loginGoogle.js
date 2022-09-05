@@ -23,7 +23,7 @@ passport.use(new GoogleStrategy({
 }));
 
 
-passport.serializeUser((user, done) =>{
+/*passport.serializeUser((user, done) =>{
     console.log('serializeUser google')
     done(null, user.id)
 });
@@ -48,6 +48,28 @@ router.get('/google', passport.authenticate('google',
 
 router.get('/google/failure', (req, res) => {
     res.send('Failed to authenticate..');
+});*/
+
+passport.serializeUser((user, done) =>{
+    console.log('serializeUser google')
+    done(null, user.id)
+});
+
+passport.deserializeUser(async (id, done) => {
+    console.log('deserializeUser google')
+    const user = await Users.findByPk(id) 
+    console.log('serializeUser: ' + user)
+    done(null, user)
+});
+
+router.post('/', passport.authenticate('local', {
+    successRedirect: "/user" ,
+    failureRedirect: "/login"
+}));
+
+router.get('/', (req, res) =>{
+    console.log('Not Autheticaded')
+    res.json({"message":'Not Autheticaded'})
 });
 
 module.exports = router;

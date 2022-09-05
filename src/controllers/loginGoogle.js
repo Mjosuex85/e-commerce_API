@@ -2,7 +2,7 @@ const { Router } = require('express');
 const passport = require('passport');
 const GoogleStrategy = require( 'passport-google-oauth2').Strategy;
 
-const { AuthUsers } = require('../db');
+const { AuthUsers, Users } = require('../db');
 const validateUserAuth = require('./helpers/loginGoogleHelper');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL} = process.env;
@@ -22,12 +22,11 @@ passport.use(new GoogleStrategy({
 }));
 
 passport.serializeUser((user, done) =>{
-    console.log(user)
     done(null, user.authID)
 });
 
 passport.deserializeUser(async (id, done) => {
-    const user = await AuthUsers.findByPk(id) 
+    const user = id.length > 3 ? await AuthUsers.findByPk(id) :  await Users.findByPk(id)
     done(null, user)
 });
 

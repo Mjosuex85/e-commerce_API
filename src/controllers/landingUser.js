@@ -9,9 +9,10 @@ function isAuthenticated(req, res, next){
 }
 
 router.get('/', isAuthenticated, async(req, res)=>{
-    try {      
+    try {
         const {id} = req.user.dataValues;
-        const user = typeof id === 'string'? await AuthUsers.findOne({ where: {id}, include:'Products'}) : await Users.findOne({ where: {id}, include:'Products'});
+        let user = await Users.findOne({ where: {id}, include:'Products'});
+        console.log(user)
         res.json({message: 'Welcome '+ user.username, user: user});
     } catch (error) {
         res.status(404).json({error: error.message});
@@ -52,6 +53,7 @@ router.get('/find/email/:email', async(req, res)=>{
             res.json({'user': false})
         }
     } catch (error) {
+        console.log(error)
         res.status(404).json({error: error.message});
     }
 });

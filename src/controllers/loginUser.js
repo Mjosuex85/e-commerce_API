@@ -14,7 +14,7 @@ router.use('/auth', loginGoogle);
 passport.use(new LocalStrategy( async function verify(email, password, cb){
     const user = await Users.findOne({where:{email}});
     if(user && !user.isBanned){
-    const passwordMatch = await bcrypt.compare(password, user.password)
+    let passwordMatch = await bcrypt.compare(password, user.dataValues.password)
     if(email === user.email && passwordMatch){
         return cb(null, {id:user.id, email:user.email});
     }}
@@ -37,6 +37,7 @@ router.post('/', passport.authenticate('local', {
 }));
 
 router.get('/', (req, res) =>{
+    console.log('Not Autheticaded')
     res.json({"message":'Not Autheticaded'})
 });
 

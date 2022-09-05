@@ -9,13 +9,31 @@ router.get("/", async (req, res)=>{
         let nameQuery = req.query.name;
         if (nameQuery) {
             let slug = nameQuery.split(' ').join('-').toLowerCase();
+
+            //pide resultados a la API 
+            const fetchApiName= await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&search=${nameQuery}`);
+
             const fetchDbName = await Products.findAll({
                 //busca el nombre en la db
                 where: {slug: {[Op.like]: '%' + slug + '%'}},
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
                         {model: Platforms, attributes: ['name'], through: { attributes: [] }}]
             });
-            res.status(200).send(fetchDbName);
+
+            // let apiSinDb = [];
+            fetchDbName.forEach((dbG)=>{
+                fetchApiName = fetchApiName.filter(g => dbG.id_api !== g.id)
+            })
+
+            // const dataArr = new Set(apiSinDb);            
+            // apiSinDb = [...dataArr];
+
+            //agega propiedad "notInStock" a los elementos traídos de la API, ya filtrados
+            fetchApiName.forEach(p=>p.notInStock=true)
+
+            let finalSearch = fetchDbName.concat(fetchApiName)
+            
+            res.status(200).send(finalSearch);
         }else{     
             var dbAll = await Products.findAll({
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},

@@ -3,7 +3,7 @@ const passport = require('passport');
 const GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 
 const { Users } = require('../db');
-const { UserAuth } = require('../models/userAuth');
+// const { UserAuth } = require('../models/userAuth');
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL} = process.env;
 

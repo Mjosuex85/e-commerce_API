@@ -10,7 +10,7 @@ async function validateUserRegister(username, name, lastname, email, password){
 
     lastnameValidate = /(^[a-zA-Z]{0,20}$)/.test(lastname),
     
-    passwordValidate = /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,8}$/.test(password);
+    passwordValidate = /^(?=.*?[A-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-.]).{8,}$/.test(password);
     
     if(usernameValidate && emailValidate && nameValidate && lastnameValidate && passwordValidate) return true
     

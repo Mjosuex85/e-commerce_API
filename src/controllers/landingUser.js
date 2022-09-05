@@ -11,7 +11,6 @@ function isAuthenticated(req, res, next){
 router.get('/', isAuthenticated, async(req, res)=>{
     try {      
         const {id} = req.user.dataValues;
-        console.log(id)
         const user = await Users.findOne({ where: {id}, include:'Products'});
         res.json({message: 'Welcome '+ user.username, user: user});
     } catch (error) {

@@ -23,7 +23,7 @@ passport.use(new LocalStrategy( async function verify(email, password, cb){
 
 passport.serializeUser((user, done) =>{
     console.log(user)
-    done('what', user.id)
+    done(null, user.id)
 });
 
 passport.deserializeUser(async (id, done) => {

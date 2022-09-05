@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-router.post('/', function(req, res, next) {
+router.get('/', function(req, res, next) {
   req.logout(function(err) {
     req.session.destroy();
     if (err) { return next(err); }

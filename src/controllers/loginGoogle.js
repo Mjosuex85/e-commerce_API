@@ -24,10 +24,12 @@ passport.use(new GoogleStrategy({
 
 
 passport.serializeUser((user, done) =>{
+    console.log('serializeUser google')
     done(null, user.id)
 });
 
 passport.deserializeUser(async (id, done) => {
+    console.log('deserializeUser google')
     const user = id.length > 3 ? await AuthUsers.findByPk(id): await Users.findByPk(id);
     done(null, user)
 });

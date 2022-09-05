@@ -38,7 +38,7 @@ router.get('/addFavorite/:idProduct', isAuthenticaded, async(req, res)=>{
     }
 })
 
-router.get('/buy:idProduct', isAuthenticaded, async(req, res)=>{
+router.get('/buy/:idProduct', isAuthenticaded, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;
         const { idProduct }= req.query;

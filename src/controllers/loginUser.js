@@ -21,6 +21,7 @@ passport.use(new LocalStrategy( async function verify(email, password, cb){
     console.log(user.dataValues.email);
     console.log(email);
     if(email === user.email && passwordMatch){
+        console.log('--------------entro-----------------')
         return cb(null, {id:user.id, email:user.email});
     }}
     return cb(null, false);

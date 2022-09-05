@@ -48,7 +48,7 @@ router.get("/", async (req, res)=>{
                     // screenshots: short_screenshots&&short_screenshots,
                     // onSale: false,
                     inStock: false,
-                    platforms: p.platforms.forEach(p=>p.name),
+                    platforms: p.platforms?.forEach(p=>p.name),
             }})
 
             // console.log("fetchApiName---------------")

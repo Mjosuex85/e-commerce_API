@@ -1,7 +1,8 @@
 const Router = require('express');
 const router = Router();
-const { Products, Platforms, Genre, Screenshots} = require('../db');
+const { Products, Platforms, Genre, Screenshots, UsedPlatforms, UsedGenre } = require('../db');
 const {Op} = require('sequelize');
+const axios = require('axios');
 
 
 router.get("/", async (req, res)=>{
@@ -9,13 +10,56 @@ router.get("/", async (req, res)=>{
         let nameQuery = req.query.name;
         if (nameQuery) {
             let slug = nameQuery.split(' ').join('-').toLowerCase();
+
+            //pide resultados a la API 
+            let fetchApiName= await axios.get(`https://api.rawg.io/api/games?key=${process.env.API_KEY}&search=${nameQuery}`);
+
+            fetchApiName = fetchApiName.data.results
+
             const fetchDbName = await Products.findAll({
                 //busca el nombre en la db
                 where: {slug: {[Op.like]: '%' + slug + '%'}},
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
                         {model: Platforms, attributes: ['name'], through: { attributes: [] }}]
             });
-            res.status(200).send(fetchDbName);
+
+            // let apiSinDb = [];
+            fetchDbName.forEach((dbG)=>{
+                fetchApiName = fetchApiName.filter(g => dbG.id_api !== g.id)
+            })
+
+            
+            //dá formato y agega propiedad "notInStock" a los elementos traídos de la API, ya filtrados
+            console.log(fetchApiName[0])
+            fetchApiName = fetchApiName.map(p=>{
+                return {   
+                    id: p.id,
+                    name: p.name,
+                    description: p.description,
+                    rating: p.ratings[0]?.percent,
+                    esrb_rating: p.esrb,
+                    background_image: p.background_image,
+                    released: p.released,
+                    requeriments_recomended: "",
+                    requeriments_min: "",
+                    // price: Math.round(((Math.random() * 70)*100)/100),
+                    slug: p.slug,
+                    metacriticRating: p.metacritic,
+                    // screenshots: short_screenshots&&short_screenshots,
+                    // onSale: false,
+                    inStock: false,
+                    platforms: p.platforms?.forEach(p=>p.name),
+            }})
+
+            // console.log("fetchApiName---------------")
+
+            let finalSearch = fetchDbName.concat(fetchApiName)
+            
+            // res.status(200).send("finalSearch-.---.-.-.");
+            // res.status(200).send(fetchApiName);
+            res.status(200).send(finalSearch);
+
+
         }else{     
             var dbAll = await Products.findAll({
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
@@ -82,6 +126,21 @@ router.post("/create", async (req,res)=>{
             });
             Create_Videogame.addGenre(findGenre);
             Create_Videogame.addPlatforms(findPlatforms);
+
+
+            platforms.map(async (e) => {
+                let find = await UsedPlatforms.findOrCreate({
+                    where: { name: e },
+                });
+            })
+            
+            genres.map(async (e) => {
+                let find2 = await UsedGenre.findOrCreate({
+                    where: { name: e },
+                });
+            })
+
+            
             res.status(200).send("Videogame Succesfully Created!")
         }catch(e){
             console.error(e);

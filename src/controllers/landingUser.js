@@ -1,70 +1,72 @@
 const { Router } = require('express');
 
-const { Users } = require('../db');
+const { Users, AuthUsers } = require('../db');
 const router = Router();
 
-function isAuthenticaded(req, res, next){
+function isAuthenticated(req, res, next){
     if(req.isAuthenticated()) return next();
     res.redirect('/login');
 }
 
-router.get('/', isAuthenticaded, async(req, res)=>{
-    try {      
+router.get('/', isAuthenticated, async(req, res)=>{
+    try {
         const {id} = req.user.dataValues;
-        const userAuth = await Users.findOne({ where: {id}, include:'Products'});
-        res.json({message: 'Welcome '+ userAuth.name, user: userAuth});
+
+        const user = await Users.findOne({ where: {id}, include:'Products'});
+        res.json({message: 'Welcome '+ user.username, user: user});
     } catch (error) {
         res.status(404).json({error: error.message});
     }
 })
 
-router.get('/auth', async(req, res)=>{
-    try {      
-        res.json({user: req.user});
-    } catch (error) {
-        res.status(404).json({error: error.message});
-    }
-})
-
-router.get('/addFavorite/:idProduct', isAuthenticaded, async(req, res)=>{
+router.get('/addFavorite/:idProduct', isAuthenticated, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;
         const { idProduct }= req.params;
-        const userAuth = await Users.findByPk(id);
-        userAuth.addProducts(idProduct, {through: 'Favorites'});
+        const user = typeof id === 'string'? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        user.addProducts(idProduct, {through: 'Favorites'});
         res.send('Added to Favorites');
     } catch (error) {
         res.status(404).json({error: error.message});
     }
 })
 
-router.get('/buy:idProduct', isAuthenticaded, async(req, res)=>{
+router.get('/buy/:idProduct', isAuthenticated, async(req, res)=>{
     try {
         const {id} = req.user.dataValues;
-        const { idProduct }= req.query;
-        const userAuth = await Users.findByPk(id);
-        userAuth.addProducts(idProduct, {through: 'Order'});
+        const { idProduct }= req.params;
+        const user = typeof id === 'string'? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        user.addProducts(idProduct, {through: 'Order'});
         res.send('Buy succesfully');
     } catch (error) {
         res.status(404).json({error: error.message});
     }
 });
 
-router.get('/find/:email', async(req, res)=>{
+router.get('/find/email/:email', async(req, res)=>{
     try {
         const {email} = req.params;
-        const useEmail = await Users.findOne({where:{email}});
-        res.json({'user': useEmail});
+        const response = await Users.findOne({ where: { email } });
+        if(response){
+            res.json({'user': true})
+        }else{
+            res.json({'user': false})
+        }
     } catch (error) {
+        console.log(error)
         res.status(404).json({error: error.message});
     }
 });
 
-router.get('/find/:username', async(req, res)=>{
+router.get('/find/username/:username', async(req, res)=>{
     try {
         const {username} = req.params;
-        const useEmail = await Users.findOne({where:{username}});
-        res.json({'user': useEmail});
+        const response = await Users.findOne({where:{username}});
+        if(response){
+            res.json({'user': true})
+        }else{
+            res.json({'user': false})
+        }
     } catch (error) {
         res.status(404).json({error: error.message});
     }

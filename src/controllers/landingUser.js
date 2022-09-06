@@ -4,6 +4,7 @@ const { Users, AuthUsers } = require('../db');
 const router = Router();
 
 function isAuthenticated(req, res, next) {
+    console.log(req.isAuthenticated())
     if (req.isAuthenticated()) return next();
     res.redirect('/login');
 }
@@ -22,7 +23,7 @@ router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
     try {
         const { id } = req.user.dataValues;
         const { idProduct } = req.params;
-        const user = typeof id === 'string' ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
         user.addProducts(idProduct, { through: 'Favorites' });
         res.send('Added to Favorites');
     } catch (error) {
@@ -34,7 +35,7 @@ router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
     try {
         const { id } = req.user.dataValues;
         const { idProduct } = req.params;
-        const user = typeof id === 'string' ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
         user.addProducts(idProduct, { through: 'Order' });
         res.send('Buy succesfully');
     } catch (error) {

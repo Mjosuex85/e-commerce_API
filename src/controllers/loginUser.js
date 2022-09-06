@@ -16,6 +16,7 @@ passport.use(new LocalStrategy(async function verify(email, password, cb) {
     if (user && !user.isBanned) {
         let passwordMatch = await bcrypt.compare(password, user.password)
         if (email === user.email && passwordMatch) {
+            console.log('done')
             return cb(null, { id: user.id, email: user.email });
         }
     }

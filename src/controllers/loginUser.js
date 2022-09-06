@@ -5,11 +5,11 @@ const LocalStrategy = require('passport-local');
 
 const { Users } = require('../db');
 
-const loginGoogle = require('./loginGoogle');
+//const loginGoogle = require('./loginGoogle');
 
 const router = Router();
 
-router.use('/auth', loginGoogle);
+//router.use('/auth', loginGoogle);
 
 passport.use(new LocalStrategy(async function verify(email, password, cb) {
     const user = await Users.findOne({ where: { email } });

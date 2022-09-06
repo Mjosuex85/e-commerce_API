@@ -29,7 +29,7 @@ router.post('/', async (req, res )=>{
 })
 
 router.get('/', (req, res) =>{
-    res.json({"message":'send a post'});
+    res.json({"message":'send a post to signin'});
 })
 
 module.exports= router;

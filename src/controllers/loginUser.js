@@ -12,7 +12,9 @@ const router = Router();
 router.use('/auth', loginGoogle);
 
 passport.use(new LocalStrategy(async function verify(email, password, cb) {
+    console.log('Local Strategy info', email, password)
     const user = await Users.findOne({ where: { email } });
+    console.log('Local Strategy user info',user)
     if (user && !user.isBanned) {
         let passwordMatch = await bcrypt.compare(password, user.password)
         if (email === user.email && passwordMatch) {

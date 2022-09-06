@@ -1,9 +1,8 @@
 const { DataTypes } = require('sequelize');
 module.exports = (sequelize) => {
-  sequelize.define('Users', {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+  sequelize.define('AuthUsers', {
+    id:{
+      type: DataTypes.STRING,
       primaryKey: true,
     },
     username: {
@@ -22,10 +21,6 @@ module.exports = (sequelize) => {
       type:DataTypes.STRING,
       allowNull:false,
     },
-    password:{
-      type:DataTypes.STRING,
-      allowNull:false
-    },
     profile_pic:{
       type: DataTypes.STRING,
       defaultValue:'undefined'
@@ -37,7 +32,7 @@ module.exports = (sequelize) => {
     isAdmin:{
       type: DataTypes.BOOLEAN,
       defaultValue: false
-    }
+    },
   },{
     updatedAt: false
   });

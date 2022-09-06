@@ -22,12 +22,18 @@ passport.use(new GoogleStrategy({
 }));
 
 
-passport.serializeUser((user, done) => {
-    console.log('this is serialize user', user.id)
-    done(null, user.id)
+passport.serializeUser(async (user, done) => {
+    if(user.id.length > 3){
+        const userGet = await AuthUsers.findByPk(user.id)
+        done(null, userGet.id)
+    }else{
+        const userGet = await Users.findByPk(user.id)
+        console.log('Users get', userGet.id)
+        done(null, userGet.id)
+    }  
 });
 
-passport.deserializeUser(async (id, done) => {
+(() => passport.deserializeUser(async (id, done) => {
     console.log('this is deserialize user', id)
     if(id.length > 3){
         console.log('this is deserialize user with google strategy', user)
@@ -38,7 +44,7 @@ passport.deserializeUser(async (id, done) => {
         console.log('this is deserialize user with local strategy', user)
         done(null, user)
     }      
-});
+}))();
 
 router.get('/google/redirect',
     passport.authenticate('google', {

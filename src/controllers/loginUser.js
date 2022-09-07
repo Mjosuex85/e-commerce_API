@@ -13,6 +13,8 @@ const loginGoogle = require('./loginGoogle');
 
 const router = Router();
 
+const { SECRET_KEY } = process.env
+
 router.use('/auth', loginGoogle);
 
 passport.use('login', new LocalStrategy({
@@ -34,8 +36,8 @@ passport.use('login', new LocalStrategy({
 }))
 
 passport.use(new JWTStrategy({
-    secretOrKey: 'top_secret',
-    jwtFromRequest: ExtractJWT.fromUrlQueryParameter('t')
+    secretOrKey: SECRET_KEY,
+    jwtFromRequest: ExtractJWT.fromUrlQueryParameter('tkn')
 }, async (token, done) => {
     try {
         return done(null, token.user)
@@ -53,7 +55,7 @@ router.post('/', async (req, res, next) => {
             req.login(user, { session: false }, async (err) => {
                 if (err) return next(err)
                 const body = { id: user.id, email: user.email }
-                const token = jwt.sign({ user: body }, 'top_secret', {expiresIn: '32s'})
+                const token = jwt.sign({ user: body }, SECRET_KEY, { expiresIn: '60s' })
                 return res.json({ token })
             })
         }

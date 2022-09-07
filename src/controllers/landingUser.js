@@ -24,6 +24,19 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
     }
 })
 
+router.get('/auth', isAuthenticated, async (req, res) => {
+    try {
+        const { id } = req.user;
+        const { idProduct } = req.params;
+        const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        user.addProducts(idProduct, { through: 'Favorites' });
+        res.send('Added to Favorites');
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+})  
+
+
 router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
     try {
         const { id } = req.user;

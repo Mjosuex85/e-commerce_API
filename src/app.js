@@ -21,13 +21,12 @@ server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
 server.use((req, res, next) => {
 console.log(req.headers.origin)
-
-  const URL = req.headers.origin;
-  res.header('Access-Control-Allow-Origin', URL);
+  
+  res.header('Access-Control-Allow-Origin', 'https://e-commerce-videogames.vercel.app/');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
   next();
 });
 server.use(session({

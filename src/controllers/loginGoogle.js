@@ -36,8 +36,8 @@ passport.serializeUser(async (user, done) => {
 (() => passport.deserializeUser(async (id, done) => {
     console.log('this is deserialize user', id)
     if(id.length > 3){
-        console.log('this is deserialize user with google strategy', user)
         const user = await AuthUsers.findByPk(id)
+        console.log('this is deserialize user with google strategy', user)
         done(null, user)
     }else{
         const user = await Users.findByPk(id)
@@ -61,11 +61,6 @@ router.get('/google', passport.authenticate('google',
 router.get('/google/failure', (req, res) => {
     res.send('Failed to authenticate..');
 });
-
-router.post('/', passport.authenticate('local', {
-    successRedirect: "/user",
-    failureRedirect: "/login"
-}));
 
 router.get('/', (req, res) => {
     console.log('Not Autheticaded')

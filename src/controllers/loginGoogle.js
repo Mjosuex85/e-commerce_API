@@ -16,7 +16,7 @@ passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: `${URL}login/auth/google/redirect`,
+        callbackURL: `${URL}/login/auth/google/redirect`,
     },
     async (request, accessToken, refreshToken, profile, done) => {
         const user = await validateUserAuth(profile)

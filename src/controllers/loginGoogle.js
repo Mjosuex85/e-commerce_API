@@ -50,7 +50,7 @@ router.get('/google/redirect',
             res.cookie('token', token);
             res.redirect(URL_ALLOWED + '/home')
         } else {
-            res.redirect('http://localhost:3001/auth/google/failure')
+            res.redirect(URL_ALLOWED +'/auth/google/failure')
         }
     }
 );

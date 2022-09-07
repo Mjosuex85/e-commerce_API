@@ -56,7 +56,7 @@ router.post('/', async (req, res, next) => {
                 if (err) return next(err)
                 const body = { id: user.id, email: user.email }
                 const token = jwt.sign({ user: body }, SECRET_KEY, { expiresIn: '60s' })
-                return res.json({ token })
+                res.json({ token })
             })
         }
         catch (e) {

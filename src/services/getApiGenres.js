@@ -11,6 +11,7 @@ async function getApiGenres(Genre) {
                 }
             })
         );
+        console.log('Genres loaded')
     }catch(err){
         console.error(err)
     }

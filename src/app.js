@@ -22,19 +22,11 @@ server.use(morgan('dev'));
 server.use((req, res, next) => {
 console.log(req.headers.origin)
   const whiteList = [
-    `${LOCALHOST1}`,
-    `${LOCALHOST2}`,
-    `${LOCALHOST3}`,
-    `${LOCALHOST4}`,
-    `${LOCALHOST5}`,
-    `${LOCALHOST6}`,
-    `${LOCALHOST7}`,
+    '*',
     'https://e-commerce-videogames.vercel.app',
   ]
-  if (whiteList.indexOf(req.headers.origin) !== -1) {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
+    res.header('Access-Control-Allow-Origin', 'https://e-commerce-videogames.vercel.app');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  }
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');

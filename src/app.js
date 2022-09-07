@@ -21,13 +21,13 @@ server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
 server.use((req, res, next) => {
   const whiteList = [
-    `http://${LOCALHOST1}`,
-    `http://${LOCALHOST2}`,
-    `http://${LOCALHOST3}`,
-    `http://${LOCALHOST4}`,
-    `http://${LOCALHOST5}`,
-    `http://${LOCALHOST6}`,
-    `http://${LOCALHOST7}`,
+    `${LOCALHOST1}`,
+    `${LOCALHOST2}`,
+    `${LOCALHOST3}`,
+    `${LOCALHOST4}`,
+    `${LOCALHOST5}`,
+    `${LOCALHOST6}`,
+    `${LOCALHOST7}`,
     'https://e-commerce-videogames.vercel.app',
   ]
   if (whiteList.indexOf(req.headers.origin) !== -1) {

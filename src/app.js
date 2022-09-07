@@ -20,15 +20,16 @@ server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
 server.use((req, res, next) => {
+console.log(req.headers.origin)
   const whiteList = [
-    `http://${LOCALHOST1}`,
-    `http://${LOCALHOST2}`,
-    `http://${LOCALHOST3}`,
-    `http://${LOCALHOST4}`,
-    `http://${LOCALHOST5}`,
-    `http://${LOCALHOST6}`,
-    `http://${LOCALHOST7}`,
-    'https://e-commerce-videogames.vercel.app/',
+    `${LOCALHOST1}`,
+    `${LOCALHOST2}`,
+    `${LOCALHOST3}`,
+    `${LOCALHOST4}`,
+    `${LOCALHOST5}`,
+    `${LOCALHOST6}`,
+    `${LOCALHOST7}`,
+    'https://e-commerce-videogames.vercel.app',
   ]
   if (whiteList.indexOf(req.headers.origin) !== -1) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);

@@ -6,55 +6,56 @@ const { Users, AuthUsers } = require('../db');
 
 const validateUserAuth = require('./helpers/loginGoogleHelper');
 
+const jwt = require('jsonwebtoken')
+
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL } = process.env;
 
 const router = Router();
 
-const { URL_ALLOWED } = process.env
+const { URL_ALLOWED, SECRET_KEY } = process.env
 
-passport.use(new GoogleStrategy({
+/* passport.use(new GoogleStrategy({
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: `${URL}/login/auth/google/redirect`,
 }, async function (request, accessToken, refreshToken, profile, cb) {
+    console.log(accessToken)
     const user = await validateUserAuth(profile)
     return cb(null, user);
-}));
+})); */
 
-
-passport.serializeUser(async (user, done) => {
-    if(user.id.length > 3){
-        const userGet = await AuthUsers.findByPk(user.id)
-        done(null, userGet.id)
-    }else{
-        const userGet = await Users.findByPk(user.id)
-        console.log('Users get', userGet.id)
-        done(null, userGet.id)
-    }  
-});
-
-(() => passport.deserializeUser(async (id, done) => {
-    console.log('this is deserialize user', id)
-    if(id.length > 3){
-        const user = await AuthUsers.findByPk(id)
-        console.log('this is deserialize user with google strategy', user)
-        done(null, user)
-    }else{
-        const user = await Users.findByPk(id)
-        console.log('this is deserialize user with local strategy', user)
-        done(null, user)
-    }      
-}))();
+passport.use("authGoogle", new GoogleStrategy(
+    {
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: `${URL}/login/auth/google/redirect`,
+    },
+    async (request, accessToken, refreshToken, profile, done) => {
+        const user = await validateUserAuth(profile)
+        return done(null, user);
+    }
+));
 
 router.get('/google/redirect',
-    passport.authenticate('google', {
-        successRedirect: URL_ALLOWED + '/home',
-        failureRedirect: '/auth/google/failure',
-        session: true
-    })
+    passport.authenticate('authGoogle', {
+        session: false
+    }),
+    async (req, res) => {
+        if (req.user) {
+            const body = { id: req.user.id, email: req.user.email }
+            console.log(body)
+            const token = jwt.sign({ user: body }, SECRET_KEY, {
+                expiresIn: '60s'
+            })
+            res.cookie('token', token);
+            res.redirect(URL_ALLOWED + '/home')
+        } else {
+            res.redirect('http://localhost:3001/auth/google/failure')
+        }
+    }
 );
 
-router.get('/google', passport.authenticate('google',
+router.get('/google', passport.authenticate('authGoogle',
     { scope: ['email', 'profile'] }
 ));
 
@@ -62,9 +63,5 @@ router.get('/google/failure', (req, res) => {
     res.send('Failed to authenticate..');
 });
 
-router.get('/', (req, res) => {
-    console.log('Not Autheticaded')
-    res.json({ "message": 'Not Autheticaded' })
-});
 
 module.exports = router;

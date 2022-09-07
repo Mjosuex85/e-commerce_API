@@ -94,6 +94,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
                 dbProduct.addPlatforms(platformDb);
             });
         });
+        console.log('Games loaded')
     }catch(err){
         console.log('error de getApiGames');
         console.log(err);

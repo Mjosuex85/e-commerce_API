@@ -15,6 +15,7 @@ async function getApiPlatforms(Platforms) {
         platformsApi.forEach(e => {
             Platforms.create({name: e.name, image_background: e.image_background});
         });
+        console.log('Platforms loaded')
     }catch(err){
         console.log(err);
     }

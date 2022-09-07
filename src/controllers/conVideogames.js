@@ -134,7 +134,7 @@ router.post("/create", async (req,res)=>{
         price, onSale, platforms, isDisabled} = req.body;
 
     if( name && description && genres && platforms && background_image &&
-        released && price && isDisabled){
+        released && price){
         try{
             let slug = name.split(' ').join('-').toLowerCase();
             let Create_Videogame = await Products.create({

@@ -22,6 +22,7 @@ server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
+ccess-Control-Allow-Origin', url);
 server.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://e-commerce-videogames.vercel.app');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');

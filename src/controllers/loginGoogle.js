@@ -31,7 +31,6 @@ router.get('/google/redirect',
     async (req, res) => {
         if (req.user) {
             const body = { id: req.user.id, email: req.user.email }
-            console.log(body)
             const token = jwt.sign({ user: body }, SECRET_KEY, {
                 expiresIn: '60s'
             })
@@ -40,8 +39,6 @@ router.get('/google/redirect',
         } else {
 
             res.redirect(URL + '/auth/google/failure')
-            // res.redirect('http://localhost:3001/auth/google/failure')
-
         }
     }
 );

@@ -20,6 +20,7 @@ server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
 server.use((req, res, next) => {
+console.log(req.headers.origin)
   const whiteList = [
     `${LOCALHOST1}`,
     `${LOCALHOST2}`,

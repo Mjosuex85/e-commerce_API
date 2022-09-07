@@ -1,5 +1,7 @@
 const { Router } = require('express');
 
+const passport = require('passport')
+
 const { Users, AuthUsers } = require('../db');
 const router = Router();
 
@@ -9,11 +11,14 @@ function isAuthenticated(req, res, next) {
     res.redirect('/login');
 }
 
-router.get('/', isAuthenticated, async (req, res) => {
+router.get('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        const { id } = req.user.dataValues;
+        const { id } = req.user;
         const user = id.length > 3 ? await AuthUsers.findOne({ where: { id }, include: 'Products' }) : await Users.findOne({ where: { id }, include: 'Products' });
-        res.json({ message: 'Welcome ' + user.username, user: user });
+        res.json({
+            message: 'Welcome' + user.username,
+            user,
+        })
     } catch (error) {
         res.status(404).json({ error: error.message });
     }
@@ -21,7 +26,7 @@ router.get('/', isAuthenticated, async (req, res) => {
 
 router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
     try {
-        const { id } = req.user.dataValues;
+        const { id } = req.user;
         const { idProduct } = req.params;
         const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
         user.addProducts(idProduct, { through: 'Favorites' });
@@ -33,7 +38,7 @@ router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
 
 router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
     try {
-        const { id } = req.user.dataValues;
+        const { id } = req.user;
         const { idProduct } = req.params;
         const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
         user.addProducts(idProduct, { through: 'Order' });

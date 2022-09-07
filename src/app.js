@@ -13,7 +13,7 @@ const routes = require('./routes/index.js');
 
 server.name = 'API';
 
-const { URL_ALLOWED, KEY_SECRET, LOCALHOST1,  LOCALHOST2, LOCALHOST3, LOCALHOST4, LOCALHOST5, LOCALHOST6, LOCALHOST7 } = process.env;
+const { KEY_SECRET } = process.env;
 
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
@@ -21,12 +21,10 @@ server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
 server.use((req, res, next) => {
 console.log(req.headers.origin)
-  const whiteList = [
-    '*',
-    'https://e-commerce-videogames.vercel.app',
-  ]
-    res.header('Access-Control-Allow-Origin', 'https://e-commerce-videogames.vercel.app');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+
+  const URL = req.headers.origin;
+  res.header('Access-Control-Allow-Origin', URL);
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');

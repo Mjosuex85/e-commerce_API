@@ -48,9 +48,9 @@ router.get('/google/redirect',
                 expiresIn: '60s'
             })
             res.cookie('token', token);
-            res.redirect(URL_ALLOWED + '/home')
+            res.redirect('https://e-commerce-videogames.vercel.app/home')
         } else {
-            res.redirect(URL_ALLOWED +'/auth/google/failure')
+            res.redirect(URL +'/auth/google/failure')
         }
     }
 );

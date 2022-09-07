@@ -14,12 +14,15 @@ const routes = require('./routes/index.js');
 
 server.name = 'API';
 
+
 const { KEY_SECRET, LOCALHOST1, } = process.env;
+
 
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
+
 const whiteList = [
   `${LOCALHOST1}`,
   'https://e-commerce-videogames.vercel.app',
@@ -31,6 +34,7 @@ server.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true'),
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');
+
   next();
 });
 server.use(session({
@@ -43,7 +47,7 @@ server.use(passport.session());
 server.use(passport.authenticate(KEY_SECRET));
 server.use('/', routes);
 
-// Error catching endware. 
+// Error catching endware.// 
 server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   const status = err.status || 500;
   const message = err.message || err;

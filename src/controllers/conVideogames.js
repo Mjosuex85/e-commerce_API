@@ -102,6 +102,30 @@ router.get("/:id", async (req, res)=>{
     }
 })
 
+//el primer key/value del objeto req.body DEBE SER id:xxxxxxxxxxxx
+router.put('/edit', async(req, res, next)=>{
+    try {      
+        let edit = req.body
+        let id= req.body.id
+
+        let keys = Object.keys(edit)
+        keys.shift()
+
+        let values = Object.values(edit)
+        values.shift() 
+
+        keys.map(async(k, i)=>{await Products.update({
+            [k]: values[i],
+                }, {
+            where: {
+                id: [id],
+            }})
+        });    
+       res.status(200).send("Juego editado!")
+    } catch (err) {
+        next(err)
+    }
+}) 
 
 //let product_required = name && description && genre && rating && metacriticRating && esrb_rating && background_image && released && requeriments_min && requeriments_recomended && price && onSale && isDisabled
 router.post("/create", async (req,res)=>{
@@ -110,7 +134,7 @@ router.post("/create", async (req,res)=>{
         price, onSale, platforms, isDisabled} = req.body;
 
     if( name && description && genres && platforms && background_image &&
-        released && price && isDisabled){
+        released && price){
         try{
             let slug = name.split(' ').join('-').toLowerCase();
             let Create_Videogame = await Products.create({
@@ -150,5 +174,7 @@ router.post("/create", async (req,res)=>{
         res.status(401).send("Error. Complete the missing fields!.")
     };
 });
+
+
 
 module.exports = router;

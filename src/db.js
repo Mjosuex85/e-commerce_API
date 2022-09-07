@@ -85,9 +85,19 @@ Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 Screenshots.belongsToMany(Products, { through: "ProductScreenshot", timestamps:false})
 Products.belongsToMany(Screenshots, { through: "ProductScreenshot", timestamps:false})
 
-getApiPlatforms(Platforms);
-getApiGenres(Genre);
-getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, UsedPlatforms);
+console.log('Relations created')
+
+setTimeout(async function loadDb() {
+  try{
+    await getApiPlatforms(Platforms);
+    await getApiGenres(Genre);
+    await getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, UsedPlatforms);
+  }catch(err){
+    console.log(err);
+    console.log('error on load db');
+  }
+}, 5000);
+
 
 module.exports = {
   ...sequelize.models, 

@@ -14,16 +14,6 @@ const router = Router();
 
 const { URL_ALLOWED, SECRET_KEY } = process.env
 
-/* passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: `${URL}/login/auth/google/redirect`,
-}, async function (request, accessToken, refreshToken, profile, cb) {
-    console.log(accessToken)
-    const user = await validateUserAuth(profile)
-    return cb(null, user);
-})); */
-
 passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,

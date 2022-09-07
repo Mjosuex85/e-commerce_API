@@ -13,17 +13,22 @@ const routes = require('./routes/index.js');
 
 server.name = 'API';
 
-const { URL_ALLOWED, KEY_SECRET, LOCALHOST } = process.env;
+const { URL_ALLOWED, KEY_SECRET, LOCALHOST1,  LOCALHOST2, LOCALHOST3, LOCALHOST4, LOCALHOST5, LOCALHOST6, LOCALHOST7 } = process.env;
 
 server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
 server.use((req, res, next) => {
- const whiteList = [
-    `http://${LOCALHOST}:3000`,
+  const whiteList = [
+    `http://${LOCALHOST1}`,
+    `http://${LOCALHOST2}`,
+    `http://${LOCALHOST3}`,
+    `http://${LOCALHOST4}`,
+    `http://${LOCALHOST5}`,
+    `http://${LOCALHOST6}`,
+    `http://${LOCALHOST7}`,
     'https://e-commerce-videogames.vercel.app/',
-
   ]
   if (whiteList.indexOf(req.headers.origin) !== -1) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);

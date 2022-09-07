@@ -85,9 +85,9 @@ Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 Screenshots.belongsToMany(Products, { through: "ProductScreenshot", timestamps:false})
 Products.belongsToMany(Screenshots, { through: "ProductScreenshot", timestamps:false})
 
-//getApiPlatforms(Platforms);//
-//getApiGenres(Genre);
-//getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, UsedPlatforms);
+getApiPlatforms(Platforms);//
+getApiGenres(Genre);
+getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, UsedPlatforms);
 
 module.exports = {
   ...sequelize.models, 

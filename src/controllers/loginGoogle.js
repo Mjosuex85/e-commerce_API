@@ -14,16 +14,6 @@ const router = Router();
 
 const { URL_ALLOWED, SECRET_KEY } = process.env
 
-/* passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: `${URL}/login/auth/google/redirect`,
-}, async function (request, accessToken, refreshToken, profile, cb) {
-    console.log(accessToken)
-    const user = await validateUserAuth(profile)
-    return cb(null, user);
-})); */
-
 passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,
@@ -48,9 +38,9 @@ router.get('/google/redirect',
                 expiresIn: '60s'
             })
             res.cookie('token', token);
-            res.redirect(URL_ALLOWED + '/home')
+            res.redirect('https://e-commerce-videogames.vercel.app/home')
         } else {
-            res.redirect('http://localhost:3001/auth/google/failure')
+            res.redirect(URL +'/auth/google/failure')
         }
     }
 );

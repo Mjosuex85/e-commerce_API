@@ -29,7 +29,7 @@ const whiteList = [
 ];
 server.use((req, res, next) => {  
   const url = whiteList.indexOf(req.headers.origin) !== 1 && whiteList[whiteList.indexOf(req.headers.origin)];
-  console.log(url)
+
   res.header('Access-Control-Allow-Origin', url);
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true'),

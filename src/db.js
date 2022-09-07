@@ -87,7 +87,7 @@ Products.belongsToMany(Screenshots, { through: "ProductScreenshot", timestamps:f
 
 console.log('Relations created')
 
-setTimeout(async function loadDb() {
+/*setTimeout(async function loadDb() {
   try{
     await getApiPlatforms(Platforms);
     await getApiGenres(Genre);
@@ -96,7 +96,7 @@ setTimeout(async function loadDb() {
     console.log(err);
     console.log('error on load db');
   }
-}, 5000);
+}, 5000);*/
 
 
 module.exports = {

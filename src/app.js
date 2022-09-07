@@ -22,15 +22,8 @@ server.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 server.use(bodyParser.json({ limit: '50mb' }));
 server.use(cookieParser(KEY_SECRET));
 server.use(morgan('dev'));
-
-const whiteList = [
-  `${LOCALHOST1}`,
-  'https://e-commerce-videogames.vercel.app',
-];
-server.use((req, res, next) => {  
-  const url = whiteList.indexOf(req.headers.origin) !== 1 && whiteList[whiteList.indexOf(req.headers.origin)];
-  console.log(url)
-  res.header('Access-Control-Allow-Origin', url);
+server.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://e-commerce-videogames.vercel.app');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.header('Access-Control-Allow-Credentials', 'true'),
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT');

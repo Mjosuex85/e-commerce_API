@@ -8,22 +8,22 @@ mercadopago.configure({
   access_token: ACCESS_TOKEN,
 });
 
-let preference = {
-    items: [
-      {
-        title: "Mi producto",
-        unit_price: 100,
-        quantity: 1,
-      },
-    ]
-  };
+// let preference = {
+//     items: [
+//       {
+//         title: "Mi producto",
+//         unit_price: 100,
+//         quantity: 1,
+//       },
+//     ]
+//   };
   
   
   
   router.post('/', function(req, res, next) {
     /* aquí crea tu orden en la DB para el usuario logeado */
   //const order = db.orders.create({ userId: req.userId, productId: req.body.productId }); // <--- pseudo-código
-
+    let preference = req.body;
 
     mercadopago.preferences
     .create(preference)

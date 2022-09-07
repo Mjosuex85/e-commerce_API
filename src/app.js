@@ -28,7 +28,7 @@ server.use((req, res, next) => {
     `http://${LOCALHOST5}`,
     `http://${LOCALHOST6}`,
     `http://${LOCALHOST7}`,
-    'https://e-commerce-videogames.vercel.app/',
+    'https://e-commerce-videogames.vercel.app',
   ]
   if (whiteList.indexOf(req.headers.origin) !== -1) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);

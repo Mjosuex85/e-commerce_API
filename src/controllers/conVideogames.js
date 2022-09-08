@@ -238,12 +238,19 @@ router.get("/add_api/:id", async (req, res)=>{
                     }
                 });
             })
+            
+            let ratings
+            if (!ratings) {
+                game.ratings = Math.round(((Math.random() * ((87 - 1 + 1)+1))*100)/100)
+            }else{
+                ratings = game.ratings[0].percent
+            }
 
             let  dbProduct = await Products.create({                               
                 id_api: game.id,
                 name: game.name,
                 description: game.description_raw,
-                rating: game.ratings[0].percent,
+                rating: ratings,
                 esrb_rating: esrb,
                 background_image: game.background_image,
                 released: game.released,

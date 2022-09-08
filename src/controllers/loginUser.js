@@ -55,7 +55,7 @@ router.post('/', async (req, res, next) => {
             req.login(user, { session: false }, async (err) => {
                 if (err) return next(err)
                 const body = { id: user.id, email: user.email }
-                const token = jwt.sign({ user: body }, SECRET_KEY, { expiresIn: '60s' })
+                const token = jwt.sign({ user: body }, SECRET_KEY, { expiresIn: '3h' })
                 res.json({ token })
             })
         }
@@ -66,8 +66,7 @@ router.post('/', async (req, res, next) => {
 })
 
 router.get('/', (req, res) => {
-    console.log('Not Autheticaded')
-    res.json({ "message": 'Not Autheticaded' })
-});
+    res.json({ "message": 'send post to login' })
+}); 
 
 module.exports = router;

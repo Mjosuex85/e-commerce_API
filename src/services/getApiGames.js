@@ -8,7 +8,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
         
         // const response =  await axios.get(link_video)
 
-        let pedido = link_video.map((e)=>axios(e));
+        let pedido = link_video.map(async(e)=> await axios(e) );
         let response = await Promise.all(pedido).catch((err)=>console.log(err));
         response = response.map(e=>e.data.results);
         response = response[0].concat(response[1],response[2]);
@@ -25,8 +25,8 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
             let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.API_KEY}`);
             let screenshots = screenshots_data.data.results;
 
-            screenshots.forEach((e) => {
-                Screenshots.create({
+            screenshots.forEach(async (e) => {
+                await Screenshots.create({
                     id: e.id,
                     image: e.image
                 });
@@ -75,7 +75,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
             
             screenshots.forEach(async (e) => {
                 var screenDb = await Screenshots.findAll({ where: { id: e.id }});
-                dbProduct.addScreenshots(screenDb);
+                await dbProduct.addScreenshots(screenDb);
             });
 
             genres.forEach(async (g) => {
@@ -83,7 +83,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
                     where: { name: g },
                   });
                 var genreDb = await Genre.findAll({ where: { name:g } });
-                dbProduct.addGenre(genreDb);
+                await dbProduct.addGenre(genreDb);
             });
             
             platforms.forEach(async (p) => {
@@ -91,7 +91,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
                     where: { name: p },
                   });
                 var platformDb = await Platforms.findAll({ where: { name:p } });
-                dbProduct.addPlatforms(platformDb);
+                await dbProduct.addPlatforms(platformDb);
             });
         });
         console.log('Games loaded')

@@ -31,7 +31,10 @@ router.get("/", async (req, res)=>{
             
             //dá formato y agega propiedad "notInStock" a los elementos traídos de la API, ya filtrados
             console.log(fetchApiName[0])
-            fetchApiName = fetchApiName.map(p=>{
+            fetchApiName = fetchApiName.map((p , i)=>{
+                if (i < 2) {
+                    console.log(p.genres);
+                }
                 return {   
                     id: p.id,
                     name: p.name,
@@ -48,7 +51,8 @@ router.get("/", async (req, res)=>{
                     // screenshots: short_screenshots&&short_screenshots,
                     // onSale: false,
                     inStock: false,
-                    platforms: p.platforms?.forEach(p=>p.name),
+                    platforms: p.platforms?.map(p=>{return{name: p.platform.name}}),
+                    genres: p.genres?.map(g=>{return {name: g.name}})
             }})
 
             // console.log("fetchApiName---------------")
@@ -113,14 +117,43 @@ router.put('/edit', async(req, res, next)=>{
 
         let values = Object.values(edit)
         values.shift() 
-
+        
         keys.map(async(k, i)=>{await Products.update({
             [k]: values[i],
-                }, {
+        }, {
             where: {
                 id: [id],
             }})
-        });    
+        });
+        
+        let product = await Products.findOne({ where: { id: id } });
+
+        if (edit.addGenre) {
+            edit.addGenre.forEach(async (e) => {
+                let genre = await Genre.findOne({ where: { name:  e} });
+                await product.addGenre(genre)
+            });
+        }
+        if (edit.rmvGenre) {
+            edit.rmvGenre.forEach(async (e) => {
+                let genre = await Genre.findOne({ where: { name:  e} });
+                await product.removeGenre(genre)
+            });
+        }
+        if (edit.addPlat) {
+            edit.addPlat.forEach(async (e) => {
+                let plat = await Platforms.findOne({ where: { name:  e} });
+                await product.addPlatforms(plat)
+            });
+        }
+        if (edit.rmvPlat) {
+            edit.rmvPlat.forEach(async (e) => {
+                let plat = await Platforms.findOne({ where: { name:  e} });
+                await product.removePlatforms(plat)
+            });
+        }
+        
+        
        res.status(200).send("Juego editado!")
     } catch (err) {
         next(err)
@@ -174,6 +207,86 @@ router.post("/create", async (req,res)=>{
         res.status(401).send("Error. Complete the missing fields!.")
     };
 });
+
+router.get("/add_api/:id", async (req, res)=>{
+    try{ 
+        let {id} = req.params
+        let product = await Products.findAll({ where: { id_api: id } });
+        if(product.length === 0){
+            let game = await axios.get(`https://api.rawg.io/api/games/${id}?key=${process.env.API_KEY}`);
+            game = game.data;
+            let esrb = game.esrb_rating;
+            if (esrb === null){
+                esrb = "Not rated";
+            } else { esrb = game.esrb_rating.name }
+
+            let requirements = game.requirements_en;
+            if (!requirements){
+                requirements = {}
+                requirements.recommended = 'No requirements';
+                requirements.minimum = 'No requirements';
+            }
+
+            let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.API_KEY}`);
+            let screenshots = screenshots_data.data.results;
+
+            screenshots.forEach( async (e) => {
+                await Screenshots.findOrCreate({
+                    where:{  
+                        id: e.id,
+                        image: e.image
+                    }
+                });
+            })
+
+            let  dbProduct = await Products.create({                               
+                id_api: game.id,
+                name: game.name,
+                description: game.description_raw,
+                rating: game.ratings[0].percent,
+                esrb_rating: esrb,
+                background_image: game.background_image,
+                released: game.released,
+                requeriments_recomended: requirements.recommended,
+                requeriments_min: requirements.minimum,
+                price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
+                slug: game.slug,
+                metacriticRating: game.metacritic,
+                isDisabled: false,
+            });
+
+            screenshots.forEach(async (e) => {
+                var screenDb = await Screenshots.findAll({ where: { id: e.id }});
+                dbProduct.addScreenshots(screenDb);
+            });
+            
+
+            game.genres.forEach(async (g) => {
+                let find = await UsedGenre.findOrCreate({
+                    where: { name: g.name },
+                });
+                var genreDb = await Genre.findAll({ where: { name:g.name } });
+                await dbProduct.addGenre(genreDb);
+            });
+            
+            game.platforms.forEach(async (p) => {
+                let find = await UsedPlatforms.findOrCreate({
+                    where: { name: p.platform.name },
+                });
+                var platformDb = await Platforms.findAll({ where: { name:p.platform.name } });
+                await dbProduct.addPlatforms(platformDb);
+            });
+
+            res.status(200).send(dbProduct);
+        }else{
+            res.status(405).send('Game already in DB');
+        }
+
+    }catch(err){
+        console.log(err);
+        res.status(401).send(err);
+    }
+})
 
 
 

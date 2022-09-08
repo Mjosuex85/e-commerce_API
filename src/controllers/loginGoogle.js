@@ -14,7 +14,7 @@ passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: `https://e-commerce-videogames.vercel.app/login/auth/google/redirect`,
+        callbackURL: `https://ecommerceapih.herokuapp.com/login/auth/google/redirect`,
     },
     async (request, accessToken, refreshToken, profile, done) => {
         const user = await validateUserAuth(profile)
@@ -32,7 +32,7 @@ router.get('/google/redirect',
             const token = jwt.sign({ user: body }, SECRET_KEY, {
                 expiresIn: '3h'
             })
-            res.cookie('token', token, {maxAge:60*60*3000, httpOnly: true, secure:true })
+            res.cookie('token', token, { expires: new Date(Date.now() + 3 * 3600000), priority: 'High' })
             res.redirect('https://e-commerce-videogames.vercel.app/home')
         } else {
             res.redirect(URL + '/auth/google/failure')

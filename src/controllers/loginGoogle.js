@@ -4,19 +4,17 @@ const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 const validateUserAuth = require('./helpers/loginGoogleHelper');
 
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL } = process.env;
+const { SECRET_KEY, LOCALHOST1, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL } = process.env;
 
 const router = Router();
-
-const { URL_ALLOWED, SECRET_KEY } = process.env
 
 passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: `${URL}login/auth/google/redirect`,
+        callbackURL: `https://e-commerce-videogames.vercel.app/login/auth/google/redirect`,
     },
     async (request, accessToken, refreshToken, profile, done) => {
         const user = await validateUserAuth(profile)
@@ -31,17 +29,13 @@ router.get('/google/redirect',
     async (req, res) => {
         if (req.user) {
             const body = { id: req.user.id, email: req.user.email }
-            console.log(body)
             const token = jwt.sign({ user: body }, SECRET_KEY, {
-                expiresIn: '60s'
+                expiresIn: '3h'
             })
-            res.cookie('token', token);
+            res.cookie('token', token, {maxAge:60*60*3000, httpOnly: true, secure:true })
             res.redirect('https://e-commerce-videogames.vercel.app/home')
         } else {
-
             res.redirect(URL + '/auth/google/failure')
-            // res.redirect('http://localhost:3001/auth/google/failure')
-
         }
     }
 );

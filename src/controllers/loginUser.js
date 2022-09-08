@@ -9,13 +9,15 @@ const jwt = require('jsonwebtoken')
 
 const { Users } = require('../db');
 
-const loginGoogle = require('./loginGoogle');
+//const loginGoogle = require('./loginGoogle');
 
 const router = Router();
+
 
 const { SECRET_KEY } = process.env
 
 router.use('/auth', loginGoogle);
+
 
 passport.use('login', new LocalStrategy({
     usernameField: 'username',

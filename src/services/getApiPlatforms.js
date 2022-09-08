@@ -12,9 +12,10 @@ async function getApiPlatforms(Platforms) {
             });
         });
         platformsApi = [].concat.apply([], platformsApi);
-        platformsApi.forEach(e => {
-            Platforms.create({name: e.name, image_background: e.image_background});
+        platformsApi.forEach( async (e) => {
+            await Platforms.create({name: e.name, image_background: e.image_background});
         });
+        console.log('Platforms loaded')
     }catch(err){
         console.log(err);
     }

@@ -131,25 +131,25 @@ router.put('/edit', async(req, res, next)=>{
         if (edit.addGenre) {
             edit.addGenre.forEach(async (e) => {
                 let genre = await Genre.findOne({ where: { name:  e} });
-                product.addGenre(genre)
+                await product.addGenre(genre)
             });
         }
         if (edit.rmvGenre) {
             edit.rmvGenre.forEach(async (e) => {
                 let genre = await Genre.findOne({ where: { name:  e} });
-                product.removeGenre(genre)
+                await product.removeGenre(genre)
             });
         }
         if (edit.addPlat) {
             edit.addPlat.forEach(async (e) => {
                 let plat = await Platforms.findOne({ where: { name:  e} });
-                product.addPlatforms(plat)
+                await product.addPlatforms(plat)
             });
         }
         if (edit.rmvPlat) {
             edit.rmvPlat.forEach(async (e) => {
                 let plat = await Platforms.findOne({ where: { name:  e} });
-                product.removePlatforms(plat)
+                await product.removePlatforms(plat)
             });
         }
         
@@ -211,22 +211,35 @@ router.post("/create", async (req,res)=>{
 router.get("/add_api/:id", async (req, res)=>{
     try{ 
         let {id} = req.params
-        let game = await axios.get(`https://api.rawg.io/api/games/${id}?key=${process.env.API_KEY}`);
-        game = game.data;
-        let esrb = game.esrb_rating;
-        if (esrb === null){
-            esrb = "Not rated";
-        } else { esrb = game.esrb_rating.name }
+        let product = await Products.findAll({ where: { id_api: id } });
+        if(product.length === 0){
+            let game = await axios.get(`https://api.rawg.io/api/games/${id}?key=${process.env.API_KEY}`);
+            game = game.data;
+            let esrb = game.esrb_rating;
+            if (esrb === null){
+                esrb = "Not rated";
+            } else { esrb = game.esrb_rating.name }
 
-        let requirements = game.requirements_en;
-        if (!requirements){
-            requirements = {}
-            requirements.recommended = 'No requirements';
-            requirements.minimum = 'No requirements';
-        }
+            let requirements = game.requirements_en;
+            if (!requirements){
+                requirements = {}
+                requirements.recommended = 'No requirements';
+                requirements.minimum = 'No requirements';
+            }
 
-        let  dbProduct = await Products.findOrCreate({     
-            where:{                                  
+            let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.API_KEY}`);
+            let screenshots = screenshots_data.data.results;
+
+            screenshots.forEach( async (e) => {
+                await Screenshots.findOrCreate({
+                    where:{  
+                        id: e.id,
+                        image: e.image
+                    }
+                });
+            })
+
+            let  dbProduct = await Products.create({                               
                 id_api: game.id,
                 name: game.name,
                 description: game.description_raw,
@@ -240,42 +253,34 @@ router.get("/add_api/:id", async (req, res)=>{
                 slug: game.slug,
                 metacriticRating: game.metacritic,
                 isDisabled: false,
-            }
-        });
-
-        let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.API_KEY}`);
-        let screenshots = screenshots_data.data.results;
-
-        screenshots.forEach((e) => {
-            console.log(e.id)
-            Screenshots.create({
-                id: e.id,
-                image: e.image
             });
-        })
 
-        /*screenshots.forEach(async (e) => {
-            var screenDb = await Screenshots.findAll({ where: { id: e.id }});
-            dbProduct.addScreenshots(screenDb);
-        });
+            screenshots.forEach(async (e) => {
+                var screenDb = await Screenshots.findAll({ where: { id: e.id }});
+                dbProduct.addScreenshots(screenDb);
+            });
+            
 
-        game.genres.forEach(async (g) => {
-            let find = await UsedGenre.findOrCreate({
-                where: { name: g.name },
-              });
-            var genreDb = await Genre.findAll({ where: { name:g.name } });
-            dbProduct.addGenre(genreDb);
-        });
-        
-        game.platforms.forEach(async (p) => {
-            let find = await UsedPlatforms.findOrCreate({
-                where: { name: p.platform.name },
-              });
-            var platformDb = await Platforms.findAll({ where: { name:p.platform.name } });
-            dbProduct.addPlatforms(platformDb);
-        });*/
+            game.genres.forEach(async (g) => {
+                let find = await UsedGenre.findOrCreate({
+                    where: { name: g.name },
+                });
+                var genreDb = await Genre.findAll({ where: { name:g.name } });
+                await dbProduct.addGenre(genreDb);
+            });
+            
+            game.platforms.forEach(async (p) => {
+                let find = await UsedPlatforms.findOrCreate({
+                    where: { name: p.platform.name },
+                });
+                var platformDb = await Platforms.findAll({ where: { name:p.platform.name } });
+                await dbProduct.addPlatforms(platformDb);
+            });
 
-        res.status(200).send(dbProduct);
+            res.status(200).send(dbProduct);
+        }else{
+            res.status(405).send('Game already in DB');
+        }
 
     }catch(err){
         console.log(err);

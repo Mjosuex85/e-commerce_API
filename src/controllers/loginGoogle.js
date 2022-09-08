@@ -33,7 +33,7 @@ router.get('/google/redirect',
                 expiresIn: '3h'
             })
             res.cookie('token', token, {maxAge:60*60*3000, httpOnly: true, secure:true, sameSite:true })
-            res.redirect(LOCALHOST1 + '/home')
+            res.redirect('https://e-commerce-videogames.vercel.app/home')
         } else {
             res.redirect(URL + '/auth/google/failure')
         }

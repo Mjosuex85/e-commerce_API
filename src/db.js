@@ -87,6 +87,7 @@ Products.belongsToMany(Screenshots, { through: "ProductScreenshot", timestamps:f
 
 console.log('Relations created')
 
+
 /*setTimeout(async function loadDb() {
   try{
     await getApiPlatforms(Platforms);

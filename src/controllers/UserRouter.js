@@ -66,6 +66,27 @@ router.put("/unban/:id", async (req,res)=>{ //se rompe si no pasa id
     };
 });
 
+router.put("/admin/:user_id", async (req,res)=>{
+    const {user_id} = req.params;
+    let user = await Users.findOne({where:{id: user_id}});
+    if(!user) return res.status(401).send("User not found");
+    try{
+        console.log(user_id)
+        if(user.isAdmin === false){
+            user.isAdmin = true;
+            console.log("User is now an Admin.");
+        }else{
+            user.isAdmin = false;
+            console.log("User is now a normal user.")
+        }
+        await user.save();
+        res.status(200).send(user)
+    }catch(error){
+        console.log(error);
+        res.status(401).send(error);
+    };
+});
+
 //screenshots -- products
 
 module.exports = router;

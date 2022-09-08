@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 
 const { Users } = require('../db');
 
-//const loginGoogle = require('./loginGoogle');
+const loginGoogle = require('./loginGoogle');
 
 const router = Router();
 

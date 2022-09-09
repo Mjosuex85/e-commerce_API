@@ -13,6 +13,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    game_id: {
+      type: DataTypes.INTEGER ,
+      allowNull: false,
+    },
     game_name: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -21,5 +25,13 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    price:{
+      type:DataTypes.FLOAT,
+      allowNull:false,
+    }, 
+     mercadopago_id:{
+      type:DataTypes.STRING,
+      allowNull:false,
+    } 
   });
 };

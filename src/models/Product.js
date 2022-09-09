@@ -67,6 +67,11 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,      
     },
+    Tags:{
+      type: DataTypes.ARRAY(DataTypes.TEXT),          //DataTypes.STRING,  //DataTypes.ARRAY(DataTypes.TEXT)
+      allowNull:false,
+      defaultValue:["has no tags"],
+    }
     // createdDb: {
     //   type: DataTypes.BOOLEAN,
     //   defaultValue: false,      

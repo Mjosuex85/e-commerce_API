@@ -295,6 +295,26 @@ router.get("/add_api/:id", async (req, res)=>{
     }
 })
 
+router.get("/detail/:id", async (req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+        try{
+            let Game = await axios.get(`https://api.rawg.io/api/games/${id}?key=${process.env.API_KEY}`);
+            /* let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${id}/screenshots?key=${process.env.API_KEY}`);
+            let screenshots = screenshots_data.data.results; */
+            let map = Game.data.map(game=>{
+                return {
+                    id_api: game.id,
+                    name: game.name,
+                    //price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
+                }    
+        })
+        res.send(map)
+    }catch(e){
+        res.send(e);
+    }
+})
+
 
 
 module.exports = router;

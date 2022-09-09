@@ -12,15 +12,22 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
         let response = await Promise.all(pedido).catch((err)=>console.log(err));
         response = response.map(e=>e.data.results);
         response = response[0].concat(response[1],response[2]);
+        //console.log(response[0].tags)
+        
 
         var randomSale = [1,3,5,7,9]
         var saleAmount = 9
 
         await response.forEach(async (game)=>{
+            //console.log(game)
+            
             
             let detail =  await axios.get(`https://api.rawg.io/api/games/${game.id}?key=${process.env.API_KEY}&page=10&page_size=100`);
             let genres = detail.data.genres.map((e) => e.name);
             let platforms = detail.data.platforms.map((e) => e.platform.name);
+            //let tags = response.map(e=>e.tags)
+            //console.log(tags)
+            
 
             let screenshots_data = await axios.get(`https://api.rawg.io/api/games/${game.id}/screenshots?key=${process.env.API_KEY}`);
             let screenshots = screenshots_data.data.results;
@@ -56,7 +63,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
 
             }
             
-            let  dbProduct = await Products.create({                                       
+            let  dbProduct = await Products.create({    
                 id_api: game.id,
                 name: game.name,
                 description: description,
@@ -65,6 +72,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
                 background_image: game.background_image,
                 released: game.released,
                 requeriments_recomended: requirements.recommended,
+                Tags: game.tags.map(t => t.name),  //tags
                 requeriments_min: requirements.minimum,
                 price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
                 slug: game.slug,

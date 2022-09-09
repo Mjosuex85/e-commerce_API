@@ -4,6 +4,7 @@ const passport = require('passport')
 
 const { Users, AuthUsers } = require('../db');
 const router = Router();
+const main = require ("./helpers/sendEmail")
 
 function isAuthenticated(req, res, next) {
     console.log(req.isAuthenticated())

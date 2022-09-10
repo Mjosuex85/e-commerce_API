@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 async function buyConfirm(email) {
   let testAccount = await nodemailer.createTestAccount();
 
+
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,

@@ -11,21 +11,24 @@ let testAccount = await nodemailer.createTestAccount();
     secure: true,
     auth: {
       user: "steamm38mm@gmail.com",
-      pass: "wqwymbwurasguxjs",
+      pass: "onadhntjkskmkdif",
     }
   });
 
 try{
+  
     await transporter.sendMail({
     from: '"Steamm" <steamm38mm@example.com>',
-    to: email,
+    to: "santigini96@gmail.com",
     subject: "Confirmacion de compra ✔",
     html: "<b>Compradoo</b>"
+    
     
 })
   } catch(error){
     emailStatus = error;
     console.log(error)
+    
   }}
 
   module.exports = main

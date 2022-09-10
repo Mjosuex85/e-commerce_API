@@ -37,6 +37,18 @@ router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
     }
 })
 
+
+
+ router.get("/sendEmail", async(req,res)=>{
+    try{
+        main()
+        res.send("Buy succesfully")
+    } catch(error){
+        res.status(404).json({error: error.message});
+    }
+  })
+
+
 router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
     try {
         const { id } = req.user;

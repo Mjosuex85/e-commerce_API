@@ -76,9 +76,6 @@ AuthUsers.belongsToMany(Products, { through: "Order"})
 Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
 Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})
 
-Products.hasMany(Reviews,{foreignKey: 'reviewID'})
-Reviews.belongsTo(Products,)
-
 Genre.belongsToMany(Products, { through: "ProductGenre", timestamps:false})
 Products.belongsToMany(Genre, { through: "ProductGenre", timestamps:false})
 

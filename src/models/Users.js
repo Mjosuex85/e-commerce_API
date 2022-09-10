@@ -39,9 +39,9 @@ module.exports = (sequelize) => {
       defaultValue: false
     },
     isVerified:{
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    }
+      type:DataTypes.BOOLEAN,
+      defaultValue:false
+    },
   },{
     updatedAt: false
   });

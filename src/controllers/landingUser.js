@@ -100,7 +100,6 @@ router.get('/find/email/:email', async (req, res) => {
         if(response.isBanned){
           user= {...user, isBanned:true};
         }
-        console.log(user)
         res.json(user);
     } catch (error) {
         res.status(404).json({ error: error.message });

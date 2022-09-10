@@ -15,7 +15,7 @@ module.exports = (sequelize) => {
     },
     game_id: {
       type: DataTypes.INTEGER ,
-      allowNull: false,
+      /* allowNull: false, */
     },
     game_name: {
       type: DataTypes.STRING,

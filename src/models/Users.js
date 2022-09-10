@@ -37,6 +37,10 @@ module.exports = (sequelize) => {
     isAdmin:{
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    isVerified:{
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   },{
     updatedAt: false

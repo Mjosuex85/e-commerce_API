@@ -22,9 +22,7 @@ router.post('/', async (req, res )=>{
     try {
         var {username, name, lastname, email, profile_pic} = req.body;
         let {password} = req.body;
-        
-        // const validateUser = await validateUserRegister(username, name, lastname, email, password);
-        const validateUser = true
+        const validateUser = await validateUserRegister(username, name, lastname, email, password);
         if (validateUser) {
             bcrypt.hash(password, keySalt, async function (err, hash) {
                 if(err) throw new Error('something is wrong with the password'); 

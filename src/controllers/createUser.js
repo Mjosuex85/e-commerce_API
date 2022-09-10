@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 
 const { Users } = require('../db.js');
 const { validateUserRegister } = require('./helpers/signupHelper.js');
+const { confirmEmail } = require('./helpers/sendEmail.js');
 
 const { KEY_SALT } = process.env;
 const keySalt = parseInt(KEY_SALT);
@@ -22,6 +23,7 @@ router.post('/', async (req, res )=>{
                 await Users.create({username, name, lastname, email, password, profile_pic});
             })
         }
+        confirmEmail(email);
         res.send('Register Complete');
     } catch (error) {
         res.status(404).send(error.message);

@@ -4,7 +4,8 @@ const passport = require('passport')
 
 const { Users, AuthUsers } = require('../db');
 const router = Router();
-const main = require ("./helpers/sendEmail")
+
+const {URL_ALLOWED} = process.env
 
 function isAuthenticated(req, res, next) {
     console.log(req.isAuthenticated())
@@ -30,6 +31,7 @@ router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
         const { id } = req.user;
         const { idProduct } = req.params;
         const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        buyConfirm(user.email);
         user.addProducts(idProduct, { through: 'Favorites' });
         res.send('Added to Favorites');
     } catch (error) {
@@ -49,11 +51,29 @@ router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
     }
 });
 
+router.get('/verify', async (req, res) => {
+    try {
+        const {email} = req.query
+        const user =  await Users.findOne({ where: { email }});
+        if(user === null){
+            res.json({message: 'Not Found'})
+        } else if(user.isVerified){
+            res.send(false)
+        }else if(!user.isVerified){
+            user.isVerified = true;
+            await user.save();
+            res.send(true)
+        }
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+});
+
 router.get('/find/email/:email', async (req, res) => {
     try {
         const { email } = req.params;
         const response = await Users.findOne({ where: { email } });
-        if (response) {
+        if (response && response.isVerified) {
             res.json({ 'user': true })
         } else {
             res.json({ 'user': false })

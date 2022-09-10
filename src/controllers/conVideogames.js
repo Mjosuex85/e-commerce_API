@@ -50,7 +50,7 @@ router.get("/", async (req, res)=>{
                     metacriticRating: p.metacritic,
                     // screenshots: short_screenshots&&short_screenshots,
                     // onSale: false,
-                    inStock: false,
+                    fromApi: true,
                     platforms: p.platforms?.map(p=>{return{name: p.platform.name}}),
                     genres: p.genres?.map(g=>{return {name: g.name}})
             }})

@@ -1,7 +1,7 @@
 const nodemailer = require("nodemailer");
 
 
-async function main(email) {
+async function confirmacionCompra(email) {
 let testAccount = await nodemailer.createTestAccount();
 
 
@@ -16,10 +16,9 @@ let testAccount = await nodemailer.createTestAccount();
   });
 
 try{
-  
     await transporter.sendMail({
     from: '"Steamm" <steamm38mm@example.com>',
-    to: "santigini96@gmail.com",
+    to: email,
     subject: "Confirmacion de compra ✔",
     html: "<b>Compradoo</b>"
     
@@ -31,4 +30,33 @@ try{
     
   }}
 
-  module.exports = main
+  async function confirmEmail(email) {
+    let testAccount = await nodemailer.createTestAccount();
+    
+    
+      let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "steamm38mm@gmail.com",
+          pass: "onadhntjkskmkdif",
+        }
+      });
+    
+    try{
+        await transporter.sendMail({
+        from: '"Steamm" <steamm38mm@example.com>',
+        to: email,
+        subject: "Confirm you email",
+        html: "<b>confirm Email</b>"
+        
+        
+    })
+      } catch(error){
+        emailStatus = error;
+        console.log(error)
+        
+      }}
+
+  module.exports = {confirmacionCompra, confirmEmail}

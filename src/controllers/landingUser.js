@@ -4,7 +4,7 @@ const passport = require('passport')
 
 const { Users, AuthUsers } = require('../db');
 const router = Router();
-const main = require ("./helpers/sendEmail")
+const {confirmacionCompra} = require ("./helpers/sendEmail")
 
 function isAuthenticated(req, res, next) {
     console.log(req.isAuthenticated())
@@ -41,12 +41,13 @@ router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
 
  router.get("/sendEmail", async(req,res)=>{
     try{
-        main()
+        confirmacionCompra();
         res.send("Buy succesfully")
     } catch(error){
         res.status(404).json({error: error.message});
     }
   })
+  
 
 
 router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
@@ -55,6 +56,7 @@ router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
         const { idProduct } = req.params;
         const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
         user.addProducts(idProduct, { through: 'Order' });
+        confirmacionCompra(user.email)
         res.send('Buy succesfully');
     } catch (error) {
         res.status(404).json({ error: error.message });

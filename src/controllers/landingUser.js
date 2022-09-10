@@ -85,14 +85,24 @@ router.get('/verify', async (req, res) => {
 router.get('/find/email/:email', async (req, res) => {
     try {
         const { email } = req.params;
-        const response = await Users.findOne({ where: { email } });
-        if (response && response.isVerified) {
-            res.json({ 'user': true })
-        } else {
-            res.json({ 'user': false })
+        let user = {
+            isVerified: false,
+            isBanned: false,
         }
+        const response = await Users.findOne({ where: { email } });
+        if (!response) {
+            res.json({user:null});
+            return;
+        } 
+        if(response.isVerified){
+          user= {...user, isVerified:true};
+        }
+        if(response.isBanned){
+          user= {...user, isBanned:true};
+        }
+        console.log(user)
+        res.json(user);
     } catch (error) {
-        console.log(error)
         res.status(404).json({ error: error.message });
     }
 });

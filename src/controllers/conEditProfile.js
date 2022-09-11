@@ -26,32 +26,6 @@ router.put('/', async(req, res, next)=>{
             }})
         });
         
-        // let product = await Products.findOne({ where: { id: id } });
-
-        // if (edit.addGenre) {
-        //     edit.addGenre.forEach(async (e) => {
-        //         let genre = await Genre.findOne({ where: { name:  e} });
-        //         await product.addGenre(genre)
-        //     });
-        // }
-        // if (edit.rmvGenre) {
-        //     edit.rmvGenre.forEach(async (e) => {
-        //         let genre = await Genre.findOne({ where: { name:  e} });
-        //         await product.removeGenre(genre)
-        //     });
-        // }
-        // if (edit.addPlat) {
-        //     edit.addPlat.forEach(async (e) => {
-        //         let plat = await Platforms.findOne({ where: { name:  e} });
-        //         await product.addPlatforms(plat)
-        //     });
-        // }
-        // if (edit.rmvPlat) {
-        //     edit.rmvPlat.forEach(async (e) => {
-        //         let plat = await Platforms.findOne({ where: { name:  e} });
-        //         await product.removePlatforms(plat)
-        //     });
-        // }
         
         
        res.status(200).send("Usuario editado!")

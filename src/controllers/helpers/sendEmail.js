@@ -3,7 +3,6 @@ const nodemailer = require("nodemailer");
 async function buyConfirm(email) {
   let testAccount = await nodemailer.createTestAccount();
 
-
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
@@ -18,7 +17,10 @@ async function buyConfirm(email) {
       from: '"Steamm" <steamm38mm@example.com>',
       to: email,
       subject: "Confirmacion de compra ✔",
-      html: "<b>Compradoo</b>"
+      html: `
+        <h1>Thanks for buy</h1>
+        <p>See your games in <a href="https://e-commerce-videogames.vercel.app/my_store">the Store</a> <p>
+      `
     })
   } catch (error) {
     console.log(error)

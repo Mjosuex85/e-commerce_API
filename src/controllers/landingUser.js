@@ -4,7 +4,7 @@ const passport = require('passport')
 
 const { Users, AuthUsers } = require('../db');
 const router = Router();
-const {confirmacionCompra} = require ("./helpers/sendEmail")
+const { confirmacionCompra } = require("./helpers/sendEmail")
 
 function isAuthenticated(req, res, next) {
     console.log(req.isAuthenticated())
@@ -23,7 +23,7 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
     } catch (error) {
         res.status(404).json({ error: error.message });
     }
-})
+});
 
 router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
     try {
@@ -40,15 +40,15 @@ router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
 
 
 
- router.get("/sendEmail", async(req,res)=>{
-    try{
+router.get("/sendEmail", async (req, res) => {
+    try {
         confirmacionCompra();
         res.send("Buy succesfully")
-    } catch(error){
-        res.status(404).json({error: error.message});
+    } catch (error) {
+        res.status(404).json({ error: error.message });
     }
-  })
-  
+})
+
 
 
 router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
@@ -66,13 +66,13 @@ router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
 
 router.get('/verify', async (req, res) => {
     try {
-        const {email} = req.query
-        const user =  await Users.findOne({ where: { email }});
-        if(user === null){
-            res.json({message: 'Not Found'})
-        } else if(user.isVerified){
+        const { email } = req.query
+        const user = await Users.findOne({ where: { email } });
+        if (user === null) {
+            res.json({ message: 'Not Found' })
+        } else if (user.isVerified) {
             res.send(false)
-        }else if(!user.isVerified){
+        } else if (!user.isVerified) {
             user.isVerified = true;
             await user.save();
             res.send(true)
@@ -91,14 +91,14 @@ router.get('/find/email/:email', async (req, res) => {
         }
         const response = await Users.findOne({ where: { email } });
         if (!response) {
-            res.json({user:null});
+            res.json({ user: null });
             return;
-        } 
-        if(response.isVerified){
-          user= {...user, isVerified:true};
         }
-        if(response.isBanned){
-          user= {...user, isBanned:true};
+        if (response.isVerified) {
+            user = { ...user, isVerified: true };
+        }
+        if (response.isBanned) {
+            user = { ...user, isBanned: true };
         }
         res.json(user);
     } catch (error) {

@@ -31,8 +31,7 @@ router.get('/google/redirect',
             const body = { id: req.user.id, email: req.user.email }
             const token = jwt.sign({ user: body }, SECRET_KEY, {
                 expiresIn: '3h'
-            })
-            console.log(token)
+            }
             res.redirect('https://e-commerce-videogames.vercel.app/oauth2/'+token)
         } else {
             res.redirect(URL + '/auth/google/failure')

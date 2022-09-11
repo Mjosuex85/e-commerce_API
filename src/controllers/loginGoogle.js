@@ -18,6 +18,7 @@ passport.use("authGoogle", new GoogleStrategy(
     },
     async (request, accessToken, refreshToken, profile, done) => {
         const user = await validateUserAuth(profile)
+        console.log("Hola soy /authgoogle")
         return done(null, user);
     }
 ));
@@ -32,6 +33,7 @@ router.get('/google/redirect',
             const token = jwt.sign({ user: body }, SECRET_KEY, {
                 expiresIn: '3h'
             })
+            console.log(token)
             res.cookie('token', token, { expires: new Date(Date.now() + 3 * 3600000),secure: true })
             res.redirect('https://e-commerce-videogames.vercel.app/home')
         } else {

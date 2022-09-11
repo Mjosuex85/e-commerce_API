@@ -14,7 +14,6 @@ passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        // callbackURL: `https://ecommerceapih.herokuapp.com/login/auth/google/redirect`,
         callbackURL: URL+`/login/auth/google/redirect`,
     },
     async (request, accessToken, refreshToken, profile, done) => {
@@ -35,7 +34,6 @@ router.get('/google/redirect',
             })
             console.log(token)
             res.redirect('https://e-commerce-videogames.vercel.app/oauth2/'+token)
-            // res.redirect(LOCALHOST1+'/oauth2/'+token)
         } else {
             res.redirect(URL + '/auth/google/failure')
         }

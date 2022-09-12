@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const { Products, Platforms, Genre, Screenshots, UsedPlatforms, UsedGenre, Users } = require('../db');
+const { AuthUsers, Users } = require('../db');
 const {Op} = require('sequelize');
 const axios = require('axios');
 
@@ -12,19 +12,36 @@ router.put('/', async(req, res, next)=>{
         let edit = req.body
         let id= req.body.id
 
-        let keys = Object.keys(edit)
+        if(id.length <= 5){
+            let keys = Object.keys(edit)
+            keys.shift()
+
+            let values = Object.values(edit)
+            values.shift() 
+        
+            keys.map(async(k, i)=>{await Users.update({
+                [k]: values[i],
+            }, {
+                where: {
+                    id: [id],
+            }})
+        });}
+        else{
+            let keys = Object.keys(edit)
         keys.shift()
 
         let values = Object.values(edit)
         values.shift() 
         
-        keys.map(async(k, i)=>{await Users.update({
+        keys.map(async(k, i)=>{await AuthUsers.update({
             [k]: values[i],
         }, {
             where: {
                 id: [id],
             }})
         });
+
+        }
         
         
         

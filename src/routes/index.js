@@ -12,6 +12,7 @@ const payment = require("../controllers/payment")
 const reviews = require("../controllers/conReviews")
 const conOrder = require("../controllers/conOrder")
 const editProfile = require("../controllers/conEditProfile")
+const conCart = require("../controllers/conCart")
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use("/user/editprofile", editProfile);
 router.use("/users", UserRouter);
 router.use("/payment", payment);
 router.use("/reviews", reviews);
-router.use("/order", conOrder)
+router.use("/order", conOrder);
+router.use("/cart", conCart);
 
 module.exports = router;

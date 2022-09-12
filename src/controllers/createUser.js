@@ -18,6 +18,8 @@ var default_profile_pic = ['https://play.nintendo.com/images/profile-mk-mario.7b
                              'https://play.nintendo.com/images/profile-mk-peach.59f7e05a.png', 'https://play.nintendo.com/images/profile-dk-donkeykong.03c4b02b.png',
                              'https://play.nintendo.com/images/profile-mk-shyguy.fa26a762.png', 'https://play.nintendo.com/images/profile-mk-kamek.6885e0cf.png']
 
+const admin = 'admin@admin.com'
+
 router.post('/', async (req, res )=>{
     try {
         var {username, name, lastname, email, profile_pic} = req.body;
@@ -28,7 +30,13 @@ router.post('/', async (req, res )=>{
                 if(err) throw new Error('something is wrong with the password'); 
                 password = hash;
                 if(!profile_pic) profile_pic = default_profile_pic[Math.floor(Math.random() * default_profile_pic.length)]
-                await Users.create({username, name, lastname, email, password, profile_pic});
+                var isAdmin = false;
+                var isVerified = false;
+                if (email === admin) {
+                    isAdmin = true;
+                    isVerified = true;
+                }
+                await Users.create({username, name, lastname, email, password, profile_pic, isAdmin, isVerified});
             })
             confirmEmail(email)
         }

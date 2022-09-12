@@ -14,7 +14,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     game_id: {
-      type: DataTypes.INTEGER ,
+      type: DataTypes.UUID ,
       /* allowNull: false, */
     },
     game_name: {

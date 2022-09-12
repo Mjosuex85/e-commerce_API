@@ -6,7 +6,7 @@ const validateUserAuth = require('./helpers/loginGoogleHelper');
 
 const jwt = require('jsonwebtoken');
 
-const { SECRET_KEY, LOCALHOST1, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL, URL_ALLOWED } = process.env;
+const { SECRET_KEY, URL_ALLOWED, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL } = process.env;
 
 const router = Router();
 
@@ -14,7 +14,7 @@ passport.use("authGoogle", new GoogleStrategy(
     {
         clientID: GOOGLE_CLIENT_ID,
         clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL:`https://ecommerceapih.herokuapp.com/login/auth/google/redirect`,
+        callbackURL:URL+`login/auth/google/redirect`,
     },
     async (request, accessToken, refreshToken, profile, done) => {
         const user = await validateUserAuth(profile)
@@ -32,7 +32,7 @@ router.get('/google/redirect',
             const token = jwt.sign({ user: body }, SECRET_KEY, {
                 expiresIn: '3h'
             })
-            res.redirect(LOCALHOST1+'oauth2/'+token)
+            res.redirect(URL_ALLOWED+'oauth2/'+token)
         } else {
             res.redirect(URL + '/auth/google/failure')
         }

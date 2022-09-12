@@ -35,6 +35,6 @@ mercadopago.configure({
     .catch(function (error) {
     console.log(error);
     });
-});
+  });
 
 module.exports = router;

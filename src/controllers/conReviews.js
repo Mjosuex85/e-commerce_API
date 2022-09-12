@@ -39,7 +39,15 @@ router.get('/:productId', async (req, res )=>{
             res.status(400).send('Product does not exist');
         }else{
             let reviews = await Reviews.findAll({ where: { productId: productId }});
-            res.status(200).send(reviews);
+
+            let reviewPf = await reviews.map(async (e) => {
+                let user = await Users.findOne({where: {username: e.username}});
+                
+                return {...e.dataValues, profile_pic: user.profile_pic};
+            })
+            Promise.all(reviewPf).then((values) => {
+                res.status(200).send(values);
+            }).catch((err)=>res.status(404).send(err));          
         }
     } catch (error) {
         res.status(404).send(error.message);

@@ -13,7 +13,7 @@ router.post("/post", async (req,res)=>{ //price --> mercado pago
                 game_id,
                 game_name,
                 username,
-                price 
+                price,
             });
             res.status(200).send("creation")
         }catch(e){
@@ -54,7 +54,7 @@ router.get("/user/:id", async (req,res)=>{ //pasas ID de usuario y devuelve sus 
 
 router.get("/game/:id", async (req,res)=>{ //pasas id de un juego y te devuelve todos los usuarios que compraron ese juego
     const {id} = req.params;
-    let find = await Order.findAll({where:{game_name: id}})
+    let find = await Order.findAll({where:{game_id: id}})
     if(find){
         try{
             res.status(200).send(find)

@@ -6,7 +6,7 @@ const validateUserAuth = require('./helpers/loginGoogleHelper');
 
 const jwt = require('jsonwebtoken');
 
-const { SECRET_KEY, LOCALHOST1, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL } = process.env;
+const { SECRET_KEY, LOCALHOST1, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, URL, URL_ALLOWED } = process.env;
 
 const router = Router();
 

@@ -1,19 +1,39 @@
 const Router = require('express');
-const {Product,Users, Order} = require("../db.js");
+const {Products,Users, Order} = require("../db.js");
 const router = Router();
-const mercadopago = require("mercadopago");
-
-
-router.get('/feedback', function(req, res) {
-	res.json(
-		/* Payment: req.query.payment_id,
-		Status: req.query.status,
-		MerchantOrder: req.query.merchant_order_id */
-        req.query
-	);
+router.get('/feedback',async function(req, res) {
+    try{
+        let mp_response = req.query
+        let id_user=[]
+        id_user = mp_response.external_reference?.split("/").shift()
+        let array_games_id = mp_response.external_reference.split("/").pop()
+        array_games_id = array_games_id.split("*")
+        let user_db = await Users.findOne({where:{id:id_user}})
+        await array_games_id.map (async e=>{
+            try{
+                console.log(e)
+            let game_db = await Products.findOne({where:{id: e}});
+            await Order.create({
+                user_id:id_user,
+                game_id:e,
+                game_name: game_db.name,
+                username:user_db.username,
+                mercadopago_id:mp_response.payment_id,
+                price:game_db.price
+            })
+            }catch(e){
+                console.log(e)
+            }
+        });
+        res.writeHead(302, {
+            Location: `${process.env.URL_ALLOWED}/success`
+        });
+        res.end();
+    }catch(e){
+        console.log(e)
+        res.send(e)
+    }
 });
-
-
 
 
 

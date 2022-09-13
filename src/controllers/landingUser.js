@@ -30,6 +30,22 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
     }
 });
 
+router.get('/putorder/:id', async (req, res)=>{
+    try {
+        const {id} = req.params;
+        const {idProduct} = req.query;
+        const user = id.length > 3 ? await AuthUsers.findOne({ where: { id }, include: Products }) : await Users.findOne({ where: { id }, include: 'Products' });
+        if( id.length > 3){
+            await user.addProducts(idProduct, { through: 'Order' });
+        } else{
+            await user.addProducts(idProduct, { through: 'order' });
+        }
+        await user.removeProducts(idProduct)
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+})
+
 router.get('/deleteFavorite/:idProduct', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const { id } = req.user,
@@ -48,8 +64,11 @@ router.get('/addFavorite/:idProduct', passport.authenticate('jwt', { session: fa
         const { id } = req.user,
         { idProduct } = req.params,
         user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
-
-        await user.addProducts(idProduct, { through: 'whishList' });
+        if( id.length > 3){
+            await user.addProducts(idProduct, { through: 'Favorites' });
+        } else{
+            await user.addProducts(idProduct, { through: 'whishList' });
+        }
         res.send(true);
     } catch (error) {
         res.status(404).json({ error: error.message });

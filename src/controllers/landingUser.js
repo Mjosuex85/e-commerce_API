@@ -2,54 +2,78 @@ const { Router } = require('express');
 
 const passport = require('passport')
 
-const { Users, AuthUsers } = require('../db');
+const { Users, AuthUsers, Products } = require('../db');
 const router = Router();
 const { confirmacionCompra } = require("./helpers/sendEmail")
 
 function isAuthenticated(req, res, next) {
-    console.log(req.isAuthenticated())
+    console.log(req.user)
     if (req.isAuthenticated()) return next();
     res.redirect('/login');
 }
-
 router.get('/', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
         const { id } = req.user;
-        const user = id.length > 3 ? await AuthUsers.findOne({ where: { id }, include: 'Products' }) : await Users.findOne({ where: { id }, include: 'Products' });
+        const user = id.length > 3 ? await AuthUsers.findOne({ where: { id }, include: Products }) : await Users.findOne({ where: { id }, include: 'Products' }),
+        products = await user.getProducts({
+            attributes: ['id', 'name', 'price'],
+            raw: true
+        });
+
         res.json({
             message: 'Welcome ' + user.username,
             user,
-        })
+            products: products
+        });
     } catch (error) {
         res.status(404).json({ error: error.message });
     }
 });
 
-router.get('/addFavorite/:idProduct', isAuthenticated, async (req, res) => {
+router.get('/putorder/:id', async (req, res)=>{
     try {
-        const { id } = req.user;
-        const { idProduct } = req.params;
-        const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
-        buyConfirm(user.email);
-        user.addProducts(idProduct, { through: 'Favorites' });
-        res.send('Added to Favorites');
+        const {id} = req.params;
+        const {idProduct} = req.query;
+        const user = id.length > 3 ? await AuthUsers.findOne({ where: { id }, include: Products }) : await Users.findOne({ where: { id }, include: 'Products' });
+        if( id.length > 3){
+            await user.addProducts(idProduct, { through: 'Order' });
+        } else{
+            await user.addProducts(idProduct, { through: 'order' });
+        }
+        await user.removeProducts(idProduct)
     } catch (error) {
         res.status(404).json({ error: error.message });
     }
 })
 
-
-
-router.get("/sendEmail", async (req, res) => {
+router.get('/deleteFavorite/:idProduct', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
     try {
-        confirmacionCompra();
-        res.send("Buy succesfully")
+        const { id } = req.user,
+        { idProduct } = req.params,
+        user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+
+        await user.removeProducts(idProduct)
+        res.send(true);
     } catch (error) {
         res.status(404).json({ error: error.message });
     }
 })
 
-
+router.get('/addFavorite/:idProduct', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    try {
+        const { id } = req.user,
+        { idProduct } = req.params,
+        user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
+        if( id.length > 3){
+            await user.addProducts(idProduct, { through: 'Favorites' });
+        } else{
+            await user.addProducts(idProduct, { through: 'whishList' });
+        }
+        res.send(true);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+})
 
 router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
     try {

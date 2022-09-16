@@ -13,7 +13,11 @@ const reviews = require("../controllers/conReviews")
 const conOrder = require("../controllers/conOrder")
 const editProfile = require("../controllers/conEditProfile")
 const conCart = require("../controllers/conCart")
+
+const conRestore = require("../controllers/conRestore")
+
 const paypal = require("../controllers/paypal")
+
 
 const router = Router();
 
@@ -30,6 +34,10 @@ router.use("/payment", payment);
 router.use("/reviews", reviews);
 router.use("/order", conOrder);
 router.use("/cart", conCart);
+
+router.use("/restore", conRestore);
+
 router.use("/paypal", paypal);
+
 
 module.exports = router;

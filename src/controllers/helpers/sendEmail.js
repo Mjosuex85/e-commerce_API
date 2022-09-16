@@ -89,4 +89,4 @@ async function forgotPassword(email,verificationLink) {
 
 
 
-module.exports = { buyConfirm, confirmEmail }
+module.exports = { buyConfirm, confirmEmail, forgotPassword }

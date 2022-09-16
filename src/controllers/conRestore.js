@@ -4,7 +4,10 @@ const jwt = require('jsonwebtoken');
 const { SECRET_KEY, URL } = process.env;
 const {Products,Users, Order, AuthUser} = require("../db.js");
 const router = Router();
-const { validate } = 'class-validator'
+const { validate } = 'class-validator';
+
+// FORGOT PASSWORD
+const {forgotPassword} = require ("./helpers/sendEmail")
 
 router.put('/restore', async (req, res, next)=>{
     try{

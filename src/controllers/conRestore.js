@@ -24,6 +24,8 @@ router.get('/restore', async (req, res, next)=>{
         let verificationLink;
         let emailStatus = 'Ok';
         // let userGoogle = AuthUser.findAll()
+
+        // try{ -- AGREGADO
         let userLocal = await Users.findOneOrFail({where:{email: email}})
         // let allUsers = userLocal.concat(userGoogle)
         // let searchResults = allUsers.filter(u=>e.email===email)
@@ -31,6 +33,9 @@ router.get('/restore', async (req, res, next)=>{
         const token = jwt.sign({userId: userLocal.id, username: userLocal.username}, SECRET_KEY, { expiresIn: '5m'})
         verificationLink= `${URL}restore/newpassword/${userLocal.id}/${token}`
         email.resetToken=token
+        // }catch (error){ -- AGREGADO
+        //     return res.json({"El usuario ingresado no esta registrado en la base de datos"})
+        // }
 
 
         if (searchResults[0].d.length > 6){
@@ -59,8 +64,19 @@ router.put('/restore/newpassword/:id/:token', async (req, res, next)=>{
         const validationOps = {validationError:{target:false, value:false}};
         const errors = await validate(user, validationOps);
 
+        // if(errors.length > 0){ -- AGREGADO
+        //    return res.status(401).json(errors);
+        // }
+
+
+        // try{
+
         user.hashPassword()
-        await  Users.save(user)
+        await  Users.save(user);
+        // } catch (error){ -- AGREGADO
+        //     return res.status(400).json({message: "Something goes wrong"})
+        // }
+        // res.json({message: "Password chenged!"})
 
         //falta res, ver video min24'
 

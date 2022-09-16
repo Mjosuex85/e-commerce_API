@@ -29,7 +29,7 @@ router.get('/restore', async (req, res, next)=>{
         // let searchResults = allUsers.filter(u=>e.email===email)
         
         const token = jwt.sign({userId: userLocal.id, username: userLocal.username}, SECRET_KEY, { expiresIn: '5m'})
-        verificationLink= `${URL}restore/newpassword/${token}`
+        verificationLink= `${URL}restore/newpassword/${userLocal.id}/${token}`
         email.resetToken=token
 
 
@@ -43,14 +43,14 @@ router.get('/restore', async (req, res, next)=>{
     }
 });
 
-router.put('/restore/newpassword', async (req, res, next)=>{
+router.put('/restore/newpassword/:id/:token', async (req, res, next)=>{
     try{
         const { newPassword } = req.body;
         const resetToken = req.headers.reset
         resetToken = JSON.stringify(resetToken)
 
         if ( !newPassword || !resetToken){
-            res.status(400).json({message: "All fields are required"})
+            res.status(400).json({message: "All fields are required "})
         }
         let jwtPayload = jwt.verify(resetToken, SECRET_KEY);
         let user = await Users.findOneOrFail({where:{resetToken}})
@@ -61,6 +61,8 @@ router.put('/restore/newpassword', async (req, res, next)=>{
 
         user.hashPassword()
         await  Users.save(user)
+
+        //falta res, ver video min24'
 
     }catch(e){
         next(e)

@@ -61,8 +61,8 @@ sequelize.models = Object.fromEntries(capsEntries);
 
 const { Products, Users, Reviews, Platforms, Genre, Screenshots, AuthUsers, UsedGenre , UsedPlatforms } = sequelize.models;
 
-Products.belongsToMany(Users, { through: "Favorites", timestamps: false})
-Users.belongsToMany(Products, { through: "Favorites", timestamps: false })
+Products.belongsToMany(Users, { through: "wishList", timestamps: false})
+Users.belongsToMany(Products, { through: "wishList", timestamps: false })
 
 Products.belongsToMany(AuthUsers, { through: "Favorites", timestamps: false})
 AuthUsers.belongsToMany(Products, { through: "Favorites", timestamps: false })
@@ -70,8 +70,8 @@ AuthUsers.belongsToMany(Products, { through: "Favorites", timestamps: false })
 Products.belongsToMany(Users, { through: "Order"})
 Users.belongsToMany(Products, { through: "Order"})
 
-Products.belongsToMany(AuthUsers, { through: "Order"})
-AuthUsers.belongsToMany(Products, { through: "Order"})
+Products.belongsToMany(AuthUsers, { through: "order"})
+AuthUsers.belongsToMany(Products, { through: "order"})
 
 Products.belongsToMany(Platforms, { through: "PlatformGame", timestamps:false})
 Platforms.belongsToMany(Products, { through: "PlatformGame", timestamps:false})

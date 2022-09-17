@@ -1,8 +1,6 @@
 const { PDFDocument } = require('pdf-lib');
 const { readFile, writeFile } = require('fs/promises');
 const QRCode = require('qrcode-svg');
-const axios = require('axios');
-var pdf = require('html-pdf');
 
 async function createPdf(user, product) {
     try {
@@ -66,12 +64,12 @@ async function createPdf(user, product) {
     }
 }
 
-function creatQr(license) {
+/* function creatQr(license) {
     const qr = new QRCode({
         content: license,
         width: 500,
         height: 500,
     }).svg();
     return qr
-}
+} */
 module.exports = { createPdf, creatQr }

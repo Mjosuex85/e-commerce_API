@@ -26,8 +26,8 @@ async function createPdf(user, product) {
         `,
 
             infoPay = `
-            Your purchase was completed the day ${new Date().toUTCString()}. Your key license is unique and this will be disabled once it is activated in the product. 
-            Never share your key license with anyone else. 
+            Your purchase was completed the day ${new Date().toUTCString()}. Your key license is unique and this will be disabled once it is activated 
+            in the product. Never share your key license with anyone else. 
             Visit our site in https://e-commerce-videogames.vercel.app for more experience.
         `;
 

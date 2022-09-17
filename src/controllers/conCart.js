@@ -24,6 +24,8 @@ router.get('/feedback',async function(req, res) {
                 mercadopago_id:mp_response.payment_id,
                 price:game_db.price
             })
+            const pdf = await createPdf(user_db, game_db);
+            await buyConfirm(user_db.email, pdf);
             }catch(e){
                 console.log(e)
             }

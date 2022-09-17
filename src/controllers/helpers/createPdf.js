@@ -16,7 +16,7 @@ async function createPdf(user, product) {
             infoGame = `
         ${product.name}
 
-        Rating:${product.rating}
+        Rating: ${product.rating}
         Price: $ ${product.price}
         `,
 

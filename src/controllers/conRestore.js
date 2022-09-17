@@ -33,7 +33,7 @@ router.get('/', async (req, res, next)=>{
         // try{ -- AGREGADO
         let userLocal = await Users.findOne({where:{email: email}})
         
-        const token = jwt.sign({userId: userLocal.id, username: userLocal.username}, SECRET_KEY, { expiresIn: '45m'})
+        const token = jwt.sign({userId: userLocal.id, username: userLocal.username}, SECRET_KEY, { expiresIn: '5m'})
 
         verificationLink= `${process.env.URL_ALLOWED}/changepass/${userLocal.id}/${token}`
         

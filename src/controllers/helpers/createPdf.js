@@ -72,4 +72,4 @@ async function createPdf(user, product) {
     }).svg();
     return qr
 } */
-module.exports = { createPdf, creatQr }
+module.exports = { createPdf }

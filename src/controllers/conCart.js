@@ -1,7 +1,7 @@
 const Router = require('express');
 const {Products,Users, Order} = require("../db.js");
 const router = Router();
-const {createPdf, creatQr} = require('./helpers/createPdf');
+const {createPdf} = require('./helpers/createPdf');
 const { buyConfirm } = require('./helpers/sendEmail.js');
 
 router.get('/feedback',async function(req, res) {
@@ -51,11 +51,6 @@ router.get('/notify',async function(req, res, next){
     } catch (error) {
         res-send(error.message)
     }
-  })
-
-  router.get('/qr',function(req, res, next){
-    const qr = creatQr('url');
-    res.send(qr)
   })
 
 

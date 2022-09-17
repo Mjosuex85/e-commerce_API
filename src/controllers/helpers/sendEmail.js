@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 
-async function buyConfirm(email) {
-  let testAccount = await nodemailer.createTestAccount();
+async function buyConfirm(email, pdf) {
 
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -18,9 +17,10 @@ async function buyConfirm(email) {
       to: email,
       subject: "Confirmacion de compra ✔",
       html: `
-        <h1>Thanks for buy</h1>
+        <h1>Thanks for your buy</h1>
         <p>See your games in <a href="https://e-commerce-videogames.vercel.app/my_store">the Store</a> <p>
-      `
+      `,
+      attachments:[{path : 'data:application/pdf;base64,'+ pdf}]
     })
   } catch (error) {
     console.log(error)

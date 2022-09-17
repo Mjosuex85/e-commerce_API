@@ -10,7 +10,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
 
         let pedido = link_video.map(async(e)=> await axios(e) );
         let response = await Promise.all(pedido).catch((err)=>console.log(err));
-        response = response.map(e=>e.data.results);
+        response = response ? response.map(e=>e.data.results): "";
         response = response[0].concat(response[1],response[2]);
 
         var randomSale = [1,3,5,7,9]

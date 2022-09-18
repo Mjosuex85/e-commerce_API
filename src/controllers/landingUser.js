@@ -75,19 +75,6 @@ router.get('/addFavorite/:idProduct', passport.authenticate('jwt', { session: fa
     }
 })
 
-router.get('/buy/:idProduct', isAuthenticated, async (req, res) => {
-    try {
-        const { id } = req.user;
-        const { idProduct } = req.params;
-        const user = id.length > 3 ? await AuthUsers.findByPk(id) : await Users.findByPk(id);
-        user.addProducts(idProduct, { through: 'Order' });
-        confirmacionCompra(user.email)
-        res.send('Buy succesfully');
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-});
-
 router.get('/verify', async (req, res) => {
     try {
         const { email } = req.query

@@ -10,6 +10,8 @@ router.get('/feedback',async function(req, res) {
         let id_user=[]
         id_user = mp_response.external_reference?.split("/").shift()
         let array_games_id = mp_response.external_reference.split("/").pop()
+        id_user = id_user.slice(1, -1);
+        id_user = parseInt(id_user)
         array_games_id = array_games_id.split("*")
         let user_db = await Users.findOne({where:{id:id_user}})
         await array_games_id.map (async e=>{

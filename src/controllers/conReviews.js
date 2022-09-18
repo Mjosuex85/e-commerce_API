@@ -6,9 +6,10 @@ const { Reviews, Products, Users } = require('../db.js');
 
 router.post('/', async (req, res )=>{
     try {
-        const {rating, description, username, productId} = req.body;
+        console.log(req.body)
+        const {rating, description, user_id, productId} = req.body;
 
-        let user = await Users.findOne({where: {username: username}});
+        let user = await Users.findOne({where: {id: user_id}});
         let product = await Products.findOne({where: {id: productId}});
         if (!user){
             res.status(400).send('User does not exist');
@@ -20,7 +21,7 @@ router.post('/', async (req, res )=>{
             let review = await Reviews.create({
                 rating: rating,
                 description: description,
-                username: username,
+                user_id: user_id,
                 productId: productId
             });
     
@@ -41,9 +42,9 @@ router.get('/:productId', async (req, res )=>{
             let reviews = await Reviews.findAll({ where: { productId: productId }});
 
             let reviewPf = await reviews.map(async (e) => {
-                let user = await Users.findOne({where: {username: e.username}});
+                let user = await Users.findOne({where: {id: e.user_id}});
                 
-                return {...e.dataValues, profile_pic: user.profile_pic};
+                return {...e.dataValues, profile_pic: user.profile_pic, username: user.username};
             })
             Promise.all(reviewPf).then((values) => {
                 res.status(200).send(values);
@@ -56,13 +57,13 @@ router.get('/:productId', async (req, res )=>{
 
 router.get('/', async (req, res )=>{
     try {
-        let username = req.query.username;
-        if (username) {
-            let user = await Users.findOne({where: {username: username}});
+        let user_id = req.query.user_id;
+        if (user_id) {
+            let user = await Users.findOne({where: {id: user_id}});
             if (!user){
                 res.status(400).send('User does not exist');
             }else{
-                let reviews = await Reviews.findAll({ where: { username: username }});
+                let reviews = await Reviews.findAll({ where: { user_id: user_id }});
                 res.status(200).send(reviews);
             }
         }else{
@@ -109,5 +110,29 @@ router.put("/add/:id", async (req,res)=>{
         };
 });
 
+router.put("/edit", async (req,res)=>{
+    try{
+        let edit = req.body
+        let id= req.body.id
+
+        let keys = Object.keys(edit)
+        keys.shift()
+
+        let values = Object.values(edit)
+        values.shift() 
+    
+        keys.map(async(k, i)=>{await Reviews.update({
+            [k]: values[i],
+        }, {
+            where: {
+                id: [id],
+        }})
+        });
+
+        res.status(200).send("Review editado!")
+    }catch{
+        res.status(401).send(err);
+    }
+});
 
 module.exports= router;

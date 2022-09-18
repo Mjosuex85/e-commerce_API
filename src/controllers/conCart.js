@@ -9,6 +9,8 @@ router.get('/feedback',async function(req, res) {
         let mp_response = req.query
         let id_user=[]
         id_user = mp_response.external_reference?.split("/").shift()
+        id_user = id_user.slice(1, -1);
+        id_user = parseInt(id_user)
         let array_games_id = mp_response.external_reference.split("/").pop()
         id_user = id_user.slice(1, -1);
         id_user = parseInt(id_user)

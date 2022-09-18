@@ -7,6 +7,10 @@ module.exports = (sequelize) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4
     },
+    user_id: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     rating: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -15,12 +19,8 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    username:{
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     productId:{
-      type: DataTypes.STRING,
+      type: DataTypes.UUID,
       allowNull: false,
     },
     reported:{

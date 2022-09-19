@@ -22,8 +22,8 @@ router.get("/", (req, res) => {
             payment_method: "paypal"
         },
         redirect_urls: {
-            return_url: "http://192.168.0.98:3001/paypal/success",
-            cancel_url: "http://192.168.0.98:3001/paypal/cancel"
+            return_url: `${process.env.URL}paypal/success`,
+            cancel_url: `${process.env.URL}paypal/cancel`
         },
         transactions: [
             {

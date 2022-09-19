@@ -1,11 +1,16 @@
 const Router = require('express');
 const {Products,Users, Order} = require("../db.js");
 const router = Router();
+const {createPdf} = require('./helpers/createPdf');
+const { buyConfirm } = require('./helpers/sendEmail.js');
+
 router.get('/feedback',async function(req, res) {
     try{
         let mp_response = req.query
         let id_user=[]
         id_user = mp_response.external_reference?.split("/").shift()
+        id_user = id_user.slice(1, -1);
+        id_user = parseInt(id_user)
         let array_games_id = mp_response.external_reference.split("/").pop()
         array_games_id = array_games_id.split("*")
         let user_db = await Users.findOne({where:{id:id_user}})
@@ -21,6 +26,8 @@ router.get('/feedback',async function(req, res) {
                 mercadopago_id:mp_response.payment_id,
                 price:game_db.price
             })
+            const pdf = await createPdf(user_db, game_db);
+            await buyConfirm(user_db.email, pdf);
             }catch(e){
                 console.log(e)
             }
@@ -35,7 +42,18 @@ router.get('/feedback',async function(req, res) {
     }
 });
 
-
+router.get('/notify',async function(req, res, next){
+    try {
+        const user = await Users.findOne({where:{id:3}}),
+        product = await Products.findOne({where:{id:'e31b3ef1-0723-4a92-9516-ad7473f65dad'}}),
+        pdf = await createPdf(user, product);
+    
+        await buyConfirm(user.email, pdf);
+        res.send('ok')
+    } catch (error) {
+        res-send(error.message)
+    }
+  })
 
 
 

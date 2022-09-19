@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 
-async function buyConfirm(email) {
-  let testAccount = await nodemailer.createTestAccount();
+async function buyConfirm(email, pdf) {
 
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -16,11 +15,12 @@ async function buyConfirm(email) {
     await transporter.sendMail({
       from: '"Steamm" <steamm38mm@example.com>',
       to: email,
-      subject: "Confirmacion de compra ✔",
+      subject: "Thanks for your buy ✔",
       html: `
-        <h1>Thanks for buy</h1>
+        <h1>Ready for a new game?</h1>
         <p>See your games in <a href="https://e-commerce-videogames.vercel.app/my_store">the Store</a> <p>
-      `
+      `,
+      attachments:[{path : 'data:application/pdf;base64,'+ pdf}]
     })
   } catch (error) {
     console.log(error)
@@ -56,4 +56,38 @@ async function confirmEmail(email) {
   }
 }
 
-module.exports = { buyConfirm, confirmEmail }
+
+
+// OLVIDE LA CONTRASEÑA//
+
+async function forgotPassword(email,verificationLink) {
+
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "steamm38mm@gmail.com",
+      pass: "onadhntjkskmkdif",
+    }
+  });
+  try {
+    await transporter.sendMail({
+      from: '"Steamm" <steamm38mm@example.com>',
+      to: email,
+      subject: "Changed your password",
+      html: `
+        <h1>You have changed your password!</h1>
+        <h2>Please, follow the link</h2>
+        <p>Changed with <link>${verificationLink}<link/><p>
+      `
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+
+module.exports = { buyConfirm, confirmEmail, forgotPassword }

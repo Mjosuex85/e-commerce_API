@@ -1,24 +1,31 @@
 const { Router } = require('express');
-const {Users} = require("../db");
+const {Users, AuthUsers} = require("../db");
 const router = Router();
 
 //---- edit user
 
 router.get("/all", async (req,res)=>{ //anda
     let data = await Users.findAll();
-    if(data.length){
-        res.status(200).send(data)
+    let google = await AuthUsers.findAll();
+    let allUsers = data.concat(google)
+    if(data.length || google.length){
+        res.status(200).send(allUsers)
     }else{
         res.status(401).send("No users found");
     };
 })
 
 router.get("/:id", async(req,res)=>{   //anda, si no se le pasa id se rompe
-    const {id} = req.params;
+    let {id} = req.params;
     //console.log(id)
         try{
             let data;
+            let google;
             if(id){
+                if(id.length > 8){
+                    google = await AuthUsers.findOne({where:{id:id}})
+                    if(!google) return res.send("user not found")
+                }
                 data = await Users.findOne( {where: {id : id}});
                 if(!data) return res.send("user not found")
             }
@@ -30,10 +37,21 @@ router.get("/:id", async(req,res)=>{   //anda, si no se le pasa id se rompe
 });
 
 router.put("/ban/:id", async (req,res)=>{ //se rompe si no pasa id,
-    const {id} = req.params;
+    let {id} = req.params;
     console.log(id)
+    let user;
         try{
-            let user = await Users.findOne({where: {id: id}});
+            if(id.length > 8){
+                user=await AuthUsers.findOne({where:{id:id}})
+                if(!user) return res.status(401).send("user not found")
+                if(user.isBanned === false){
+                    user.isBanned = true
+                }
+                await user.save();
+                res.status(200).send(user);
+                return
+            }
+            user = await Users.findOne({where: {id: id}});
             if (!user) return res.status(401).send("User not found")
             if(user.isBanned === false){
                 user.isBanned = true
@@ -50,10 +68,22 @@ router.put("/ban/:id", async (req,res)=>{ //se rompe si no pasa id,
 
 
 router.put("/unban/:id", async (req,res)=>{ //se rompe si no pasa id
-    const {id} = req.params;
-    let user = await Users.findOne({where: {id: id}});
-    if (!user) return res.status(401).send("User not found");
+    let {id} = req.params;
+    let user;
     try{
+        if(id.length > 8){
+            user = await AuthUsers.findOne({where: {id: id}});
+            if(!user) return res.status(401).send("user not found")
+            if(user.isBanned === true){
+                user.isBanned = false;
+                console.log("user unbanned!")
+            }
+            await user.save();
+            res.status(200).send(user);
+            return
+        }
+        user = await Users.findOne({where: {id: id}});
+        if (!user) return res.status(401).send("User not found");
         if(user.isBanned === true){
             user.isBanned = false;
             console.log("user unbanned!")
@@ -67,11 +97,28 @@ router.put("/unban/:id", async (req,res)=>{ //se rompe si no pasa id
 });
 
 router.put("/admin/:user_id", async (req,res)=>{
-    const {user_id} = req.params;
-    let user = await Users.findOne({where:{id: user_id}});
-    if(!user) return res.status(401).send("User not found");
+    let {user_id} = req.params;
+    console.log(user_id)
+    console.log(typeof user_id) //string
+    let user;
     try{
-        console.log(user_id)
+        if(user_id.length > 8 ){
+            user = await AuthUsers.findOne({where: {id: user_id}});
+            console.log(user) //null
+            if(!user) return res.status(401).send("no encontre el usuario google");
+            if(user.isAdmin === false){
+                user.isAdmin = true;
+                console.log("User is now an Admin.");
+            }else{
+                user.isAdmin = false;
+                console.log("User is now a normal user.")
+            }
+            await user.save();
+            res.status(200).send(user)
+            return
+        }
+        user = await Users.findOne({where:{id: user_id}});
+        if(!user) return res.status(401).send("User not found");
         if(user.isAdmin === false){
             user.isAdmin = true;
             console.log("User is now an Admin.");

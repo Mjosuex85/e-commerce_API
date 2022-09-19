@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const passport = require('passport')
 const session = require('express-session');
 const cors = require('cors')
+const engines = require("consolidate");
 
 require('./db.js');
 
@@ -39,6 +40,9 @@ server.use(passport.initialize());
 server.use(passport.session());
 server.use(passport.authenticate(KEY_SECRET));
 server.use('/', routes);
+server.engine("ejs", engines.ejs);
+server.set("views", "./views");
+server.set("view engine", "ejs");
 
 // Error catching endware.// 
 server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars

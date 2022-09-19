@@ -16,7 +16,6 @@ router.get('/', passport.authenticate('jwt', { session: false }), async (req, re
         const { id } = req.user;
         const user = id.length > 3 ? await AuthUsers.findOne({ where: { id }, include: Products }) : await Users.findOne({ where: { id }, include: 'Products' }),
         products = await user.getProducts({
-            attributes: ['id', 'name', 'price'],
             raw: true
         });
 

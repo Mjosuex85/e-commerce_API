@@ -40,19 +40,6 @@ router.get('/feedback',async function(req, res) {
     }
 });
 
-router.get('/notify',async function(req, res, next){
-    try {
-        const user = await Users.findOne({where:{id:3}}),
-        product = await Products.findOne({where:{id:'e31b3ef1-0723-4a92-9516-ad7473f65dad'}}),
-        pdf = await createPdf(user, product);
-    
-        await buyConfirm(user.email, pdf);
-        res.send('ok')
-    } catch (error) {
-        res-send(error.message)
-    }
-  })
-
 
 
 

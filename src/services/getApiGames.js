@@ -66,7 +66,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
                 released: game.released,
                 requeriments_recomended: requirements.recommended,
                 requeriments_min: requirements.minimum,
-                price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
+                price: Math.round(((Math.random() * ((70 - 1)+1))*100)/100),
                 slug: game.slug,
                 metacriticRating: game.metacritic,
                 isDisabled: false,

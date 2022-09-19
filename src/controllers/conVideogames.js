@@ -5,6 +5,7 @@ const {Op} = require('sequelize');
 const axios = require('axios');
 
 
+
 router.get("/", async (req, res)=>{
     try{
         let nameQuery = req.query.name;
@@ -164,8 +165,9 @@ router.put('/edit', async(req, res, next)=>{
 router.post("/create", async (req,res)=>{
     const {name, genres, description, rating, metacriticRating, esrb_rating, 
         background_image, released, requeriments_min, requeriments_recomended,
-        price, onSale, platforms, isDisabled} = req.body;
-
+        price, onSale, platforms, isDisabled, screenshots} = req.body;
+        console.log("🚀 ~ file: conVideogames.js ~ line 168 ~ router.post ~ Screenshots", screenshots)
+        
     if( name && description && genres && platforms && background_image &&
         released && price){
         try{
@@ -175,6 +177,18 @@ router.post("/create", async (req,res)=>{
                 background_image, released, requeriments_min, requeriments_recomended,
                 price, onSale, isDisabled
             });
+
+            await screenshots.forEach(async (e) => {
+                await Screenshots.create({                    
+                    image: e
+                });
+            })
+
+            await screenshots.forEach(async (e) => {
+                var screenDb = await Screenshots.findAll({ where: { image: e }});
+                await Create_Videogame.addScreenshots(screenDb);
+            });
+
             const findGenre = await Genre.findAll({
                 where:{name: genres}
             });

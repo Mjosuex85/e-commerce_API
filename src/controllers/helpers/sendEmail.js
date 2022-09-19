@@ -77,7 +77,6 @@ async function forgotPassword(email,verificationLink) {
       to: email,
       subject: "Changed your password",
       html: `
-        <h1>You have changed your password!</h1>
         <h2>Please, follow the link</h2>
         <p>Changed with <link>${verificationLink}<link/><p>
       `

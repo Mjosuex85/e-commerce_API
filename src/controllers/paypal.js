@@ -16,46 +16,50 @@ router.get("/rend", (req, res) => {
 
 router.get("/", (req, res) => {
     try{
-    var create_payment_json = {
-        intent: "sale",
-        payer: {
-            payment_method: "paypal"
-        },
-        redirect_urls: {
-            return_url: `${process.env.URL}paypal/success`,
-            cancel_url: `${process.env.URL}paypal/cancel`
-        },
-        transactions: [
-            {
-                item_list: {
-                    items: [
-                        {
-                            name: "item",
-                            sku: "item",
-                            price: "0.01",
-                            currency: "BRL",
-                            quantity: 1
-                        }
-                    ]
-                },
-                amount: {
-                    currency: "BRL",
-                    total: "0.01"
-                },
-                description: "This is the payment description."
-            }
-        ]
-    };
+    
+        let price = req.query.price;
 
-    paypal.payment.create(create_payment_json, function(error, payment) {
-        if (error) {
-            throw error;
-        } else {
-            console.log("Create Payment Response");
-            console.log(payment);
-            res.redirect(payment.links[1].href);
-        }
-    });
+        var create_payment_json = {
+            intent: "sale",
+            payer: {
+                payment_method: "paypal"
+            },
+            redirect_urls: {
+                return_url: `${process.env.URL}paypal/success?price=${price}`,
+                cancel_url: `${process.env.URL}paypal/cancel`
+            },
+            transactions: [
+                {
+                    item_list: {
+                        items: [
+                            {
+                                name: "item",
+                                sku: "games",
+                                price: price,
+                                currency: "BRL",
+                                quantity: 1
+                            }
+                        ]
+                    },
+                    amount: {
+                        currency: "BRL",
+                        total: price
+                    },
+                    description: "This is the payment description."
+                }
+            ]
+        };
+
+        paypal.payment.create(create_payment_json, function(error, payment) {
+            if (error) {
+                throw error;
+            } else {
+                console.log("Create Payment Response");
+                console.log(payment);
+                res.redirect(payment.links[1].href);
+            }
+        });
+
     }catch(err){
         console.log(err)
     }
@@ -63,6 +67,7 @@ router.get("/", (req, res) => {
 
 router.get("/success", (req, res) => {
     try{
+    let price = req.query.price;
     var PayerID = req.query.PayerID;
     var paymentId = req.query.paymentId;
     var execute_payment_json = {
@@ -71,7 +76,7 @@ router.get("/success", (req, res) => {
             {
                 amount: {
                     currency: "BRL",
-                    total: "0.01"
+                    total: price
                 }
             }
         ]

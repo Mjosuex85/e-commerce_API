@@ -16,7 +16,7 @@ async function buyConfirm(email) {
     await transporter.sendMail({
       from: '"Steamm" <steamm38mm@example.com>',
       to: email,
-      subject: "Confirmacion de compra ✔",
+      subject: "Proof of payment ✔",
       html: `
         <h1>Thanks for buy</h1>
         <p>See your games in <a href="https://e-commerce-videogames.vercel.app/my_store">the Store</a> <p>

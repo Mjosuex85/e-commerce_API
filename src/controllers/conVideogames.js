@@ -21,7 +21,9 @@ router.get("/", async (req, res)=>{
                 //busca el nombre en la db
                 where: {slug: {[Op.like]: '%' + slug + '%'}},
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
-                        {model: Platforms, attributes: ['name'], through: { attributes: [] }}]
+                        {model: Platforms, attributes: ['name'], through: { attributes: [] }},
+                        
+                    ]
             });
 
             // let apiSinDb = [];
@@ -179,15 +181,17 @@ router.post("/create", async (req,res)=>{
             });
 
             await screenshots.forEach(async (e) => {
-                await Screenshots.create({                    
+                console.log("🚀 ~ file: conVideogames.js ~ line 183 ~ awaitscreenshots.forEach ~ e", e)
+                let screenDb = await Screenshots.create({                    
                     image: e
                 });
+                await Create_Videogame.addScreenshots(screenDb);
+                console.log("🚀 ~ file: conVideogames.js ~ line 189 ~ awaitscreenshots.forEach ~ screenDb", screenDb)
             })
 
-            await screenshots.forEach(async (e) => {
-                var screenDb = await Screenshots.findAll({ where: { image: e }});
-                await Create_Videogame.addScreenshots(screenDb);
-            });
+            // await screenshots.forEach(async (e) => {
+            //     var screenDb = await Screenshots.findAll({ where: { image: e }});
+            // });
 
             const findGenre = await Genre.findAll({
                 where:{name: genres}

@@ -17,24 +17,24 @@ passport.use("authGoogle", new GoogleStrategy(
         callbackURL:URL+`login/auth/google/redirect`,
     },
     async (request, accessToken, refreshToken, profile, done) => {
-        const user = await validateUserAuth(profile)
+        const user = await validateUserAuth(profile);
         return done(null, user);
     }
 ));
 
 router.get('/google/redirect',
     passport.authenticate('authGoogle', {
-        session: false
+        session: false,
     }),
     async (req, res) => {
-        if (req.user) {
+        if (req.user && !req.user.isBanned) {
             const body = { id: req.user.id, email: req.user.email }
             const token = jwt.sign({ user: body }, SECRET_KEY, {
                 expiresIn: '3h'
             })
             res.redirect(URL_ALLOWED+'/oauth2/'+token)
         } else {
-            res.redirect(URL + '/auth/google/failure')
+            res.redirect(URL_ALLOWED+'/oauth2/')
         }
     }
 );

@@ -47,5 +47,4 @@ router.get('/google/failure', (req, res) => {
     res.send('Failed to authenticate..');
 });
 
-
 module.exports = router;

@@ -5,6 +5,7 @@ const {Op} = require('sequelize');
 const axios = require('axios');
 
 
+
 router.get("/", async (req, res)=>{
     try{
         let nameQuery = req.query.name;
@@ -20,7 +21,9 @@ router.get("/", async (req, res)=>{
                 //busca el nombre en la db
                 where: {slug: {[Op.like]: '%' + slug + '%'}},
                 include:[{model: Genre, attributes: ['name'], through: { attributes: [] }},
-                        {model: Platforms, attributes: ['name'], through: { attributes: [] }}]
+                        {model: Platforms, attributes: ['name'], through: { attributes: [] }},
+                        
+                    ]
             });
 
             // let apiSinDb = [];
@@ -164,8 +167,9 @@ router.put('/edit', async(req, res, next)=>{
 router.post("/create", async (req,res)=>{
     const {name, genres, description, rating, metacriticRating, esrb_rating, 
         background_image, released, requeriments_min, requeriments_recomended,
-        price, onSale, platforms, isDisabled} = req.body;
-
+        price, onSale, platforms, isDisabled, screenshots} = req.body;
+        console.log("🚀 ~ file: conVideogames.js ~ line 168 ~ router.post ~ Screenshots", screenshots)
+        
     if( name && description && genres && platforms && background_image &&
         released && price){
         try{
@@ -175,6 +179,20 @@ router.post("/create", async (req,res)=>{
                 background_image, released, requeriments_min, requeriments_recomended,
                 price, onSale, isDisabled
             });
+
+            await screenshots.forEach(async (e) => {
+                console.log("🚀 ~ file: conVideogames.js ~ line 183 ~ awaitscreenshots.forEach ~ e", e)
+                let screenDb = await Screenshots.create({                    
+                    image: e
+                });
+                await Create_Videogame.addScreenshots(screenDb);
+                console.log("🚀 ~ file: conVideogames.js ~ line 189 ~ awaitscreenshots.forEach ~ screenDb", screenDb)
+            })
+
+            // await screenshots.forEach(async (e) => {
+            //     var screenDb = await Screenshots.findAll({ where: { image: e }});
+            // });
+
             const findGenre = await Genre.findAll({
                 where:{name: genres}
             });
@@ -233,7 +251,6 @@ router.get("/add_api/:id", async (req, res)=>{
             screenshots.forEach( async (e) => {
                 await Screenshots.findOrCreate({
                     where:{  
-                        id: e.id,
                         image: e.image
                     }
                 });
@@ -263,7 +280,7 @@ router.get("/add_api/:id", async (req, res)=>{
             });
 
             screenshots.forEach(async (e) => {
-                var screenDb = await Screenshots.findAll({ where: { id: e.id }});
+                var screenDb = await Screenshots.findAll({ where: { image: e.image }});
                 dbProduct.addScreenshots(screenDb);
             });
             

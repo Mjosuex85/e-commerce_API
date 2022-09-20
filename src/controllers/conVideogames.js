@@ -251,7 +251,6 @@ router.get("/add_api/:id", async (req, res)=>{
             screenshots.forEach( async (e) => {
                 await Screenshots.findOrCreate({
                     where:{  
-                        id: e.id,
                         image: e.image
                     }
                 });
@@ -281,7 +280,7 @@ router.get("/add_api/:id", async (req, res)=>{
             });
 
             screenshots.forEach(async (e) => {
-                var screenDb = await Screenshots.findAll({ where: { id: e.id }});
+                var screenDb = await Screenshots.findAll({ where: { image: e.image }});
                 dbProduct.addScreenshots(screenDb);
             });
             

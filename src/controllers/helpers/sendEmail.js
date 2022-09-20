@@ -56,4 +56,38 @@ async function confirmEmail(email) {
   }
 }
 
-module.exports = { buyConfirm, confirmEmail }
+
+
+// OLVIDE LA CONTRASEÑA//
+
+async function forgotPassword(email,verificationLink) {
+
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "steamm38mm@gmail.com",
+      pass: "onadhntjkskmkdif",
+    }
+  });
+  try {
+    await transporter.sendMail({
+      from: '"Steamm" <steamm38mm@example.com>',
+      to: email,
+      subject: "Changed your password",
+      html: `
+        <h1>You have changed your password!</h1>
+        <h2>Please, follow the link</h2>
+        <p>Changed with <link>${verificationLink}<link/><p>
+      `
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+
+
+module.exports = { buyConfirm, confirmEmail, forgotPassword }

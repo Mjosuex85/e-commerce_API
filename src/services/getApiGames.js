@@ -26,8 +26,9 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
             let screenshots = screenshots_data.data.results;
 
             screenshots.forEach(async (e) => {
-                await Screenshots.create({
-                    id: e.id,
+                
+                
+                await Screenshots.create({                    
                     image: e.image
                 });
             })
@@ -66,7 +67,7 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
                 released: game.released,
                 requeriments_recomended: requirements.recommended,
                 requeriments_min: requirements.minimum,
-                price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
+                price: Math.round(((Math.random() * ((70 - 1)+1))*100)/100),
                 slug: game.slug,
                 metacriticRating: game.metacritic,
                 isDisabled: false,
@@ -74,7 +75,9 @@ async function getApiGames(Products, Platforms, Genre, Screenshots, UsedGenre, U
             })
             
             screenshots.forEach(async (e) => {
-                var screenDb = await Screenshots.findAll({ where: { id: e.id }});
+                // console.log(" ~ file: getApiGames.js ~ line 80 ~ screenshots.forEach ~ e", e)
+                
+                var screenDb = await Screenshots.findAll({ where: { image: e.image }});
                 await dbProduct.addScreenshots(screenDb);
             });
 

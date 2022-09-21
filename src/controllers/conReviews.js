@@ -135,4 +135,16 @@ router.put("/edit", async (req,res)=>{
     }
 });
 
+router.delete('/delete/:id', async (req, res) => {
+    const {id} = req.params;
+    try{
+        let review = await Reviews.destroy({where: {id: id}});
+        if (review < 1) return res.status(401).send("Review not found")
+        res.status(200).send('Review deleted');
+    }catch(err){
+        console.error(err);
+        res.status(401).send(err);
+    };
+})
+
 module.exports= router;

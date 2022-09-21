@@ -256,24 +256,19 @@ router.get("/add_api/:id", async (req, res)=>{
                 });
             })
             
-            let ratings
-            if (!ratings) {
-                game.ratings = Math.round(((Math.random() * ((87 - 1 + 1)+1))*100)/100)
-            }else{
-                ratings = game.ratings[0].percent
-            }
+            game.ratings = Math.round(((Math.random() * (87 - 1)+1)))+1
 
             let  dbProduct = await Products.create({                               
                 id_api: game.id,
                 name: game.name,
                 description: game.description_raw,
-                rating: ratings,
+                rating: game.ratings,
                 esrb_rating: esrb,
                 background_image: game.background_image,
                 released: game.released,
                 requeriments_recomended: requirements.recommended,
                 requeriments_min: requirements.minimum,
-                price: Math.round(((Math.random() * ((70 - 1 + 1)+1))*100)/100),
+                price: Math.round(((Math.random() * ((70 - 1)+1))*100)/100),
                 slug: game.slug,
                 metacriticRating: game.metacritic,
                 isDisabled: false,

@@ -1,45 +1,84 @@
 const Router = require('express');
-const {Products,Users, Order} = require("../db.js");
+const {Products,Users, Order, AuthUsers} = require("../db.js");
 const router = Router();
 const {createPdf} = require('./helpers/createPdf');
 const { buyConfirm } = require('./helpers/sendEmail.js');
+var bigInt = require("big-integer");
 
 router.get('/feedback',async function(req, res) {
     try{
         let mp_response = req.query
         let id_user=[]
         id_user = mp_response.external_reference?.split("/").shift()
-        id_user = id_user.slice(1, -1);
-        id_user = parseInt(id_user)
+        //id_user = id_user.slice(1, -1);
+        console.log("aca viene el id user")
+        console.log(id_user)
+        console.log("aca viene el bigint")
+        //id_user = BigInt(id_user) //102966775138757338073
+        //id_user=id_user.slice(0,-1)
+        //id_user = parseInt(id_user)
         let array_games_id = mp_response.external_reference.split("/").pop()
         array_games_id = array_games_id.split("*")
-        let user_db = await Users.findOne({where:{id:id_user}})
-        await array_games_id.map (async e=>{
-            try{
-                console.log(e)
-            let game_db = await Products.findOne({where:{id: e}});
-            await Order.create({
-                user_id:id_user,
-                game_id:e,
-                game_name: game_db.name,
-                username:user_db.username,
-                mercadopago_id:mp_response.payment_id,
-                price:game_db.price
+        if(id_user.length > 5){
+            console.log("es de google")
+            let user_db = await AuthUsers.findOne({where:{id:102966775138757338073}})
+            await array_games_id.map(async e=>{
+                try{
+                    let game_db = await Products.findOne({where:{id:e}});
+                    await Order.create({
+                        user_id:id_user,
+                        game_id:e,
+                        game_name: game_db.name,
+                        username:user_db.username,
+                        mercadopago_id:mp_response.payment_id,
+                        price:game_db.price
+                    })
+                    const pdf = await createPdf(google_db, game_db);
+                    await buyConfirm(google_db.email, pdf);
+                }catch(e){
+                    console.log(e)
+                }
             })
-            const pdf = await createPdf(user_db, game_db);
-            await buyConfirm(user_db.email, pdf);
-            }catch(e){
-                console.log(e)
-            }
-        });
-        res.writeHead(302, {
-            Location: `${process.env.URL_ALLOWED}/success`
-        });
-        res.end();
-    }catch(e){
-        console.log(e)
-        res.send(e)
+            res.writeHead(302, {
+                Location: `${process.env.URL_ALLOWED}/success`
+            });
+            res.end();
+            
+
+        }else{
+            console.log("es local")
+            try{
+                let user_db = await Users.findOne({where:{id:id_user}})
+                await array_games_id.map (async e=>{
+                    try{
+                        console.log(e)
+                        let game_db = await Products.findOne({where:{id: e}});
+                        await Order.create({
+                            user_id:id_user,
+                            game_id:e,
+                            game_name: game_db.name,
+                            username:user_db.username,
+                            mercadopago_id:mp_response.payment_id,
+                            price:game_db.price
+                        })
+                        const pdf = await createPdf(user_db, game_db);
+                        await buyConfirm(user_db.email, pdf);
+                    }catch(e){
+                        console.log(e)
+                    }
+                });
+                res.writeHead(302, {
+                    Location: `${process.env.URL_ALLOWED}/success`
+                });
+                res.end();
+        }catch(e){
+            console.log(e)
+            res.send(e)
+        }
     }
+}catch(e){
+    console.log(e)
+}
 });
 
 

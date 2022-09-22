@@ -20,7 +20,7 @@ router.get('/feedback',async function(req, res) {
         //id_user = parseInt(id_user)
         let array_games_id = mp_response.external_reference.split("/").pop()
         array_games_id = array_games_id.split("*")
-        if(id_user.length > 5){
+        if(id_user.length > 10){
             console.log("es de google")
             let user_db = await AuthUsers.findOne({where:{id:id_user}})
             await array_games_id.map(async e=>{

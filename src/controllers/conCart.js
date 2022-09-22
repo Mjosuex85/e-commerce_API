@@ -9,8 +9,9 @@ router.get('/feedback',async function(req, res) {
     try{
         let mp_response = req.query
         let id_user=[]
+        console.log(mp_response)
         id_user = mp_response.external_reference?.split("/").shift()
-        //id_user = id_user.slice(1, -1);
+        id_user = id_user.slice(1, -1);
         console.log("aca viene el id user")
         console.log(id_user)
         console.log("aca viene el bigint")
@@ -21,7 +22,7 @@ router.get('/feedback',async function(req, res) {
         array_games_id = array_games_id.split("*")
         if(id_user.length > 5){
             console.log("es de google")
-            let user_db = await AuthUsers.findOne({where:{id:102966775138757338073}})
+            let user_db = await AuthUsers.findOne({where:{id:id_user}})
             await array_games_id.map(async e=>{
                 try{
                     let game_db = await Products.findOne({where:{id:e}});
@@ -33,8 +34,8 @@ router.get('/feedback',async function(req, res) {
                         mercadopago_id:mp_response.payment_id,
                         price:game_db.price
                     })
-                    const pdf = await createPdf(google_db, game_db);
-                    await buyConfirm(google_db.email, pdf);
+                    const pdf = await createPdf(user_db, game_db);
+                    await buyConfirm(user_db.email, pdf);
                 }catch(e){
                     console.log(e)
                 }
@@ -82,11 +83,27 @@ router.get('/feedback',async function(req, res) {
 });
 
 
+/* http://localhost:3001/cart/feedback?mp_response=collection_id:'26011077746'&collection_status:'approved'&payment_id:'26011077746'&status:'approved'&external_reference:'"102966775138757338073"/1b6a4be1-3721-4902-ae2c-b9e7481b0084*1b6a4be1-3721-4902-ae2c-b9e7481b0085'&payment_type:'credit_card'&merchant_order_id:'5903770201'&preference_id:'98201383-6ecb793e-2604-4b70-99bd-113f4527d69b'&site_id:'MLA'&processing_mode:'aggregator'&merchant_account_id:'null'
+
+http://localhost:3001/cart/feedback?mp_response=payment_id:'26011077746'&external_reference:'"102966775138757338073"/1b6a4be1-3721-4902-ae2c-b9e7481b0084*1b6a4be1-3721-4902-ae2c-b9e7481b0085'
+ */
+/*{
+    collection_id: '26011077746',
+    collection_status: 'approved',
+    payment_id: '26011077746', //
+    status: 'approved',
+    external_reference: '"102966775138757338073"/1b6a4be1-3721-4902-ae2c-b9e7481b0084', //
+    payment_type: 'credit_card',
+    merchant_order_id: '5903770201',
+    preference_id: '98201383-6ecb793e-2604-4b70-99bd-113f4527d69b',
+    site_id: 'MLA',
+    processing_mode: 'aggregator',
+    merchant_account_id: 'null'
+  }*/
 
 
 
-
-
+///cart/feedback?collection_id=26011022324&collection_status=approved&payment_id=26011022324&status=approved&external_reference=%22102966775138757338073%22/0da3877c-3a02-4f5f-b0c3-bcf2a48c6cb8&payment_type=account_money&merchant_order_id=5903756527&preference_id=98201383-bdf7d616-7e51-441d-9634-af09c6ad1009&site_id=MLA&processing_mode=aggregator&merchant_account_id=null
 
 
 
